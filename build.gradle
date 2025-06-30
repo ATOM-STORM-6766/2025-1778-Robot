@@ -1,13 +1,12 @@
-
 plugins {
     id "java"
-    id "org.jetbrains.kotlin.jvm" version "1.9.23"
+    // id "org.jetbrains.kotlin.jvm" version "1.9.23"
     id "edu.wpi.first.GradleRIO" version "2025.3.2"
     id "idea"
 }
 
 def javaVersion = JavaVersion.VERSION_17
-def kotlinJvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.@Companion.fromTarget(javaVersion.toString())
+// def kotlinJvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.@Companion.fromTarget(javaVersion.toString())
 
 java {
     sourceCompatibility = javaVersion
@@ -79,7 +78,7 @@ dependencies {
     nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
     simulationRelease wpi.sim.enableRelease()
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    // implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     testImplementation platform("org.junit:junit-bom:5.10.1")
     testImplementation "org.junit.jupiter:junit-jupiter-api"
@@ -119,13 +118,13 @@ tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
 }
 
-kotlin {
-    compilerOptions {
-        jvmTarget.set(kotlinJvmTarget)
-        // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
-        jvmToolchain(Integer.valueOf(javaVersion.toString()))
-    }
-}
+// kotlin {
+//     compilerOptions {
+//         jvmTarget.set(kotlinJvmTarget)
+//         // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
+//         jvmToolchain(Integer.valueOf(javaVersion.toString()))
+//     }
+// }
 
 idea {
     project {

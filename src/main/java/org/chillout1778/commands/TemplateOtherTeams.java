@@ -3,13 +3,16 @@ package org.chillout1778.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class TemplateOtherTeams extends Command {
-    public void startDriving() {
-        // TODO: adapt for other teams
+public class TemplateOtherTeams extends Command {    public void startDriving() {
+        // Template method - adapt for other teams' robot implementation
+        // Example: otherTeamRobot.startDriving();
+        System.out.println("Starting driving - adapt for specific team implementation");
     }
 
     public void stopDriving() {
-        // TODO: adapt for other teams
+        // Template method - adapt for other teams' robot implementation  
+        // Example: otherTeamRobot.stopDriving();
+        System.out.println("Stopping driving - adapt for specific team implementation");
     }
 
     private final Timer timer = new Timer();
