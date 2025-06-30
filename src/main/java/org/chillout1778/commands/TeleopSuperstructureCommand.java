@@ -5,7 +5,7 @@ import org.chillout1778.Controls;
 import org.chillout1778.subsystems.Superstructure;
 
 public class TeleopSuperstructureCommand extends Command {
-    
+
     public TeleopSuperstructureCommand() {
         addRequirements(Superstructure.getInstance());
     }
@@ -13,7 +13,9 @@ public class TeleopSuperstructureCommand extends Command {
     @Override
     public void execute() {
         Superstructure.getInstance().setInputs(Controls.superstructureInputs());
-    }    @Override
+    }
+
+    @Override
     public void end(boolean interrupted) {
         Superstructure.getInstance().emptyInputs();
     }

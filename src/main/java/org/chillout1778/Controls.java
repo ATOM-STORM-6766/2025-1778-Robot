@@ -6,12 +6,15 @@ import org.chillout1778.subsystems.Arm;
 import org.chillout1778.subsystems.Elevator;
 import org.chillout1778.subsystems.Superstructure;
 
-public class Controls {    private static final CommandGenericHID driverController = new CommandGenericHID(0);
+public class Controls {
+    private static final CommandGenericHID driverController = new CommandGenericHID(0);
     public static final CommandPS5Controller operatorController = new CommandPS5Controller(1);
 
-    public enum AlignMode { 
-        None, ReefAlign, TroughAlign, AlgaeAlign, BargeAlign 
-    }    public static class DriveInputs {
+    public enum AlignMode {
+        None, ReefAlign, TroughAlign, AlgaeAlign, BargeAlign
+    }
+
+    public static class DriveInputs {
         private final double forward;
         private final double left;
         private final double rotation;
@@ -26,11 +29,25 @@ public class Controls {    private static final CommandGenericHID driverControll
             this.alignMode = alignMode;
         }
 
-        public double getForward() { return forward; }
-        public double getLeft() { return left; }
-        public double getRotation() { return rotation; }
-        public double getDeadzone() { return deadzone; }
-        public AlignMode getAlignMode() { return alignMode; }
+        public double getForward() {
+            return forward;
+        }
+
+        public double getLeft() {
+            return left;
+        }
+
+        public double getRotation() {
+            return rotation;
+        }
+
+        public double getDeadzone() {
+            return deadzone;
+        }
+
+        public AlignMode getAlignMode() {
+            return alignMode;
+        }
 
         public boolean isNonZero() {
             return Math.abs(forward) > deadzone || Math.abs(left) > deadzone || Math.abs(rotation) > deadzone;
@@ -45,49 +62,66 @@ public class Controls {    private static final CommandGenericHID driverControll
 
     public static DriveInputs driverInputs() {
         return new DriveInputs(
-            driverController.getRawAxis(2),
-            -driverController.getRawAxis(3),
-            -driverController.getRawAxis(0),
-            0.05,
-            getDriverAlignMode()
-        );
+                driverController.getRawAxis(2),
+                -driverController.getRawAxis(3),
+                -driverController.getRawAxis(0),
+                0.05,
+                getDriverAlignMode());
     }
 
     public static DriveInputs operatorInputs() {
         return new DriveInputs(
-            -operatorController.getHID().getLeftY(),
-            -operatorController.getHID().getLeftX(),
-            -operatorController.getHID().getRightX(),
-            0.1,
-            getOperatorAlignMode()
-        );
-    }    private static AlignMode getDriverAlignMode() {
-        if (wantBargeAutoAlign()) return AlignMode.BargeAlign;
-        else if (wantCoralAutoAlign() && superstructureInputs().getWantedScoringLevel() != Superstructure.ScoringLevel.TROUGH) return AlignMode.ReefAlign;
-        else if (wantCoralAutoAlign() && superstructureInputs().getWantedScoringLevel() == Superstructure.ScoringLevel.TROUGH) return AlignMode.TroughAlign;
-        else if (wantAlgaeAutoAlign() && superstructureInputs().getWantGetAlgae() && !Arm.getInstance().hasObject) return AlignMode.AlgaeAlign;
-        else return AlignMode.None;
+                -operatorController.getHID().getLeftY(),
+                -operatorController.getHID().getLeftX(),
+                -operatorController.getHID().getRightX(),
+                0.1,
+                getOperatorAlignMode());
+    }
+
+    private static AlignMode getDriverAlignMode() {
+        if (wantBargeAutoAlign())
+            return AlignMode.BargeAlign;
+        else if (wantCoralAutoAlign()
+                && superstructureInputs().getWantedScoringLevel() != Superstructure.ScoringLevel.TROUGH)
+            return AlignMode.ReefAlign;
+        else if (wantCoralAutoAlign()
+                && superstructureInputs().getWantedScoringLevel() == Superstructure.ScoringLevel.TROUGH)
+            return AlignMode.TroughAlign;
+        else if (wantAlgaeAutoAlign() && superstructureInputs().getWantGetAlgae() && !Arm.getInstance().hasObject)
+            return AlignMode.AlgaeAlign;
+        else
+            return AlignMode.None;
     }
 
     private static AlignMode getOperatorAlignMode() {
-        if (wantBargeAutoAlign()) return AlignMode.BargeAlign;
-        else if (wantCoralAutoAlign() && superstructureInputs().getWantedScoringLevel() != Superstructure.ScoringLevel.TROUGH) return AlignMode.ReefAlign;
-        else if (wantCoralAutoAlign() && superstructureInputs().getWantedScoringLevel() == Superstructure.ScoringLevel.TROUGH) return AlignMode.TroughAlign;
-        else if (wantAlgaeAutoAlign() && superstructureInputs().getWantGetAlgae() && !Arm.getInstance().hasObject) return AlignMode.AlgaeAlign;
-        else return AlignMode.None;
-    }public static boolean wantCoralAutoAlign() {
+        if (wantBargeAutoAlign())
+            return AlignMode.BargeAlign;
+        else if (wantCoralAutoAlign()
+                && superstructureInputs().getWantedScoringLevel() != Superstructure.ScoringLevel.TROUGH)
+            return AlignMode.ReefAlign;
+        else if (wantCoralAutoAlign()
+                && superstructureInputs().getWantedScoringLevel() == Superstructure.ScoringLevel.TROUGH)
+            return AlignMode.TroughAlign;
+        else if (wantAlgaeAutoAlign() && superstructureInputs().getWantGetAlgae() && !Arm.getInstance().hasObject)
+            return AlignMode.AlgaeAlign;
+        else
+            return AlignMode.None;
+    }
+
+    public static boolean wantCoralAutoAlign() {
         return superstructureInputs().getWantExtend();
     }
 
     public static boolean wantAlgaeAutoAlign() {
-        return superstructureInputs().getWantGetAlgae() && Arm.getInstance().atSetpoint && Elevator.getInstance().atSetpoint;
+        return superstructureInputs().getWantGetAlgae() && Arm.getInstance().atSetpoint
+                && Elevator.getInstance().atSetpoint;
     }
 
     public static boolean wantBargeAutoAlign() {
         return superstructureInputs().getWantExtend()
-            && (Superstructure.getInstance().state == Superstructure.State.AlgaeRest
-            || Superstructure.getInstance().state == Superstructure.State.PreBarge 
-            || Superstructure.getInstance().state == Superstructure.State.ScoreBarge);
+                && (Superstructure.getInstance().state == Superstructure.State.AlgaeRest
+                        || Superstructure.getInstance().state == Superstructure.State.PreBarge
+                        || Superstructure.getInstance().state == Superstructure.State.ScoreBarge);
     }
 
     public static boolean wantOffsetArmPositive() {
@@ -119,20 +153,21 @@ public class Controls {    private static final CommandGenericHID driverControll
                 level = lastScoringLevel;
                 break;
         }
-        lastScoringLevel = level;        return new Superstructure.SuperstructureInputs(
-            operatorController.getHID().getL2Button(), // wantExtend
-            operatorController.getHID().getR2Button(), // wantGroundIntake  
-            operatorController.getHID().getCrossButton(), // wantArmSourceIntake
-            operatorController.getHID().getSquareButton(), // wantSourceIntake
-            (driverController.getRawAxis(4) > .5 || operatorController.getHID().getR3Button()), // wantScore
-            level, // wantedScoringLevel
-            operatorController.getHID().getR1Button(), // wantGetAlgae
-            operatorController.getHID().getTriangleButton(), // wantDescoreAlgae
-            false, // wantVerticalPickup
-            operatorController.getHID().getOptionsButton(), // wantResetSuperstructure
-            operatorController.getHID().getCircleButton(), // wantScoreProcessor
-            operatorController.getHID().getL1Button(), // wantAlgaeGroundIntake
-            false // wantPopsiclePickup
+        lastScoringLevel = level;
+        return new Superstructure.SuperstructureInputs(
+                operatorController.getHID().getL2Button(), // wantExtend
+                operatorController.getHID().getR2Button(), // wantGroundIntake
+                operatorController.getHID().getCrossButton(), // wantArmSourceIntake
+                operatorController.getHID().getSquareButton(), // wantSourceIntake
+                (driverController.getRawAxis(4) > .5 || operatorController.getHID().getR3Button()), // wantScore
+                level, // wantedScoringLevel
+                operatorController.getHID().getR1Button(), // wantGetAlgae
+                operatorController.getHID().getTriangleButton(), // wantDescoreAlgae
+                false, // wantVerticalPickup
+                operatorController.getHID().getOptionsButton(), // wantResetSuperstructure
+                operatorController.getHID().getCircleButton(), // wantScoreProcessor
+                operatorController.getHID().getL1Button(), // wantAlgaeGroundIntake
+                false // wantPopsiclePickup
         );
     }
 }

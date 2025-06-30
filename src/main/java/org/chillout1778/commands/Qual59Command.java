@@ -13,7 +13,7 @@ public class Qual59Command extends Command {
        212.70   0    0    Down
        213.24   250  110  DescoreAlgae
      */
-    
+
     private final Timer timer = new Timer();
     private int phase = 0;
 
@@ -34,14 +34,16 @@ public class Qual59Command extends Command {
         if (Elevator.getInstance().state != Elevator.State.Barge || !Elevator.getInstance().getAtSetpoint()) {
             return; // unnecessary safeties
         }
-        
-        switch (phase) {            case 0:
+
+        switch (phase) {
+            case 0:
                 if (Elevator.getInstance().getAtSetpoint()) {
                     phase = 1;
                     // Set arm pivot state when Arm is complete
                     Arm.getInstance().setState(Arm.PivotState.ScoreCoral, Arm.RollerState.SlowOut);
                 }
-                break;            case 1:
+                break;
+            case 1:
                 if (Arm.getInstance().getAtSetpoint()) {
                     phase = 2;
                     Arm.getInstance().setState(Arm.PivotState.L4FinishScoreCoral, Arm.RollerState.Out);
@@ -61,7 +63,9 @@ public class Qual59Command extends Command {
                 }
                 break;
         }
-    }    @Override
+    }
+
+    @Override
     public void end(boolean interrupted) {
         // Reset superstructure inputs when command ends
         Superstructure.getInstance().emptyInputs();

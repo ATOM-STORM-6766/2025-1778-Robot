@@ -12,7 +12,7 @@ import org.chillout1778.Utils;
 
 public class Elevator extends SubsystemBase {
     private static Elevator instance;
-    
+
     public static Elevator getInstance() {
         if (instance == null) {
             instance = new Elevator();
@@ -53,18 +53,21 @@ public class Elevator extends SubsystemBase {
         public double getExtension() {
             return rawExtension; // Simplified version
         }
-    }    private final TalonFX mainMotor;
-    private final TalonFX followerMotor;    public boolean isZeroed = false;
+    }
+
+    private final TalonFX mainMotor;
+    private final TalonFX followerMotor;
+    public boolean isZeroed = false;
     public boolean atSetpoint = false;
     public State state = State.Down; // Current state
 
     private Elevator() {
         mainMotor = new TalonFX(Constants.CanIds.ELEVATOR_MAIN_MOTOR);
         followerMotor = new TalonFX(Constants.CanIds.ELEVATOR_FOLLOWER_MOTOR);
-        
+
         // Apply motor configurations
         mainMotor.getConfigurator().apply(Constants.Elevator.getMotorConfig());
-        
+
         followerMotor.setControl(new Follower(Constants.CanIds.ELEVATOR_MAIN_MOTOR, false));
     }
 
@@ -93,13 +96,16 @@ public class Elevator extends SubsystemBase {
         NeutralModeValue mode = enabled ? NeutralModeValue.Coast : NeutralModeValue.Brake;
         mainMotor.setNeutralMode(mode);
         followerMotor.setNeutralMode(mode);
-    }    public void setState(State newState) {
-        if (!isZeroed) return;
-        
+    }
+
+    public void setState(State newState) {
+        if (!isZeroed)
+            return;
+
         this.state = newState;
         double targetPosition = newState.getExtension() / (2 * Math.PI * Constants.Elevator.SPOOL_RADIUS);
         mainMotor.setControl(new MotionMagicVoltage(targetPosition));
-        
+
         // Update atSetpoint
         atSetpoint = Math.abs(getHeight() - newState.getExtension()) < Constants.Elevator.SETPOINT_THRESHOLD;
     }

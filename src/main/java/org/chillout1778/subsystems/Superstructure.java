@@ -10,7 +10,7 @@ import org.chillout1778.commands.ZeroIntakeCommand;
 
 public class Superstructure extends SubsystemBase {
     private static Superstructure instance;
-    
+
     public static Superstructure getInstance() {
         if (instance == null) {
             instance = new Superstructure();
@@ -20,7 +20,9 @@ public class Superstructure extends SubsystemBase {
 
     public enum ScoringLevel {
         TROUGH, L2, L3, L4
-    }    public enum State {
+    }
+
+    public enum State {
         StartPosition, Rest, PrePopsiclePickup, PopsiclePickup,
         ArmSourceIntake, SourceIntake, PreHandoff, Handoff, PreScore, ReverseHandoff,
         PreTrough, Trough,
@@ -54,10 +56,10 @@ public class Superstructure extends SubsystemBase {
         private final boolean wantPopsiclePickup;
 
         public SuperstructureInputs(boolean wantExtend, boolean wantGroundIntake, boolean wantArmSourceIntake,
-                                  boolean wantSourceIntake, boolean wantScore, ScoringLevel wantedScoringLevel,
-                                  boolean wantGetAlgae, boolean wantDescoreAlgae, boolean wantVerticalPickup,
-                                  boolean wantResetSuperstructure, boolean wantScoreProcessor, 
-                                  boolean wantAlgaeGroundIntake, boolean wantPopsiclePickup) {
+                boolean wantSourceIntake, boolean wantScore, ScoringLevel wantedScoringLevel,
+                boolean wantGetAlgae, boolean wantDescoreAlgae, boolean wantVerticalPickup,
+                boolean wantResetSuperstructure, boolean wantScoreProcessor,
+                boolean wantAlgaeGroundIntake, boolean wantPopsiclePickup) {
             this.wantExtend = wantExtend;
             this.wantGroundIntake = wantGroundIntake;
             this.wantArmSourceIntake = wantArmSourceIntake;
@@ -74,25 +76,62 @@ public class Superstructure extends SubsystemBase {
         }
 
         // Getters
-        public boolean getWantExtend() { return wantExtend; }
-        public boolean getWantGroundIntake() { return wantGroundIntake; }
-        public boolean getWantArmSourceIntake() { return wantArmSourceIntake; }
-        public boolean getWantSourceIntake() { return wantSourceIntake; }
-        public boolean getWantScore() { return wantScore; }
-        public ScoringLevel getWantedScoringLevel() { return wantedScoringLevel; }
-        public boolean getWantGetAlgae() { return wantGetAlgae; }
-        public boolean getWantDescoreAlgae() { return wantDescoreAlgae; }
-        public boolean getWantVerticalPickup() { return wantVerticalPickup; }
-        public boolean getWantResetSuperstructure() { return wantResetSuperstructure; }
-        public boolean getWantScoreProcessor() { return wantScoreProcessor; }
-        public boolean getWantAlgaeGroundIntake() { return wantAlgaeGroundIntake; }
-        public boolean getWantPopsiclePickup() { return wantPopsiclePickup; }
+        public boolean getWantExtend() {
+            return wantExtend;
+        }
+
+        public boolean getWantGroundIntake() {
+            return wantGroundIntake;
+        }
+
+        public boolean getWantArmSourceIntake() {
+            return wantArmSourceIntake;
+        }
+
+        public boolean getWantSourceIntake() {
+            return wantSourceIntake;
+        }
+
+        public boolean getWantScore() {
+            return wantScore;
+        }
+
+        public ScoringLevel getWantedScoringLevel() {
+            return wantedScoringLevel;
+        }
+
+        public boolean getWantGetAlgae() {
+            return wantGetAlgae;
+        }
+
+        public boolean getWantDescoreAlgae() {
+            return wantDescoreAlgae;
+        }
+
+        public boolean getWantVerticalPickup() {
+            return wantVerticalPickup;
+        }
+
+        public boolean getWantResetSuperstructure() {
+            return wantResetSuperstructure;
+        }
+
+        public boolean getWantScoreProcessor() {
+            return wantScoreProcessor;
+        }
+
+        public boolean getWantAlgaeGroundIntake() {
+            return wantAlgaeGroundIntake;
+        }
+
+        public boolean getWantPopsiclePickup() {
+            return wantPopsiclePickup;
+        }
     }
 
     private SuperstructureInputs inputs = new SuperstructureInputs(
-        false, false, false, false, false, ScoringLevel.TROUGH, 
-        false, false, false, false, false, false, false
-    );
+            false, false, false, false, false, ScoringLevel.TROUGH,
+            false, false, false, false, false, false, false);
 
     private Superstructure() {
         // Constructor
@@ -108,25 +147,26 @@ public class Superstructure extends SubsystemBase {
 
     public void emptyInputs() {
         this.inputs = new SuperstructureInputs(
-            false, false, false, false, false, ScoringLevel.TROUGH,
-            false, false, false, false, false, false, false
-        );
-    }    public Command makeZeroAllSubsystemsCommand() {
+                false, false, false, false, false, ScoringLevel.TROUGH,
+                false, false, false, false, false, false, false);
+    }
+
+    public Command makeZeroAllSubsystemsCommand() {
         return new ParallelCommandGroup(
-            new ZeroArmCommand(),
-            new ZeroElevatorCommand(), 
-            new ZeroIntakeCommand()
-        );
+                new ZeroArmCommand(),
+                new ZeroElevatorCommand(),
+                new ZeroIntakeCommand());
     }
 
     // Current state tracking
     private State currentState = State.StartPosition;
     private Timer stateTimer = new Timer();
-      // Transition logic based on Kotlin version
+
+    // Transition logic based on Kotlin version
     private void updateState() {
         // Check for state transitions based on inputs and subsystem status
         // This is a simplified implementation of the complex state machine from Kotlin
-        
+
         // Basic state transitions
         if (inputs.wantResetSuperstructure) {
             setState(State.Rest);
@@ -157,26 +197,26 @@ public class Superstructure extends SubsystemBase {
                 }
             }
         }
-        
+
         // Apply current state to subsystems (simplified)
         applyStateToSubsystems();
     }
-    
+
     private void setState(State newState) {
         if (currentState != newState) {
             currentState = newState;
             stateTimer.restart();
-            
+
             // Set subsystem states based on current superstructure state
             applyStateToSubsystems();
         }
     }
-    
+
     private void applyStateToSubsystems() {
         // Apply the current state settings to all subsystems
-        // This is simplified - in the full implementation, each state would 
+        // This is simplified - in the full implementation, each state would
         // specify exact positions for elevator, arm pivot, arm rollers, and intake
-        
+
         // For now, just ensure subsystems are in reasonable states
         switch (currentState) {
             case StartPosition:

@@ -33,9 +33,9 @@ public class Utils {
     }
 
     public static boolean isInsideField(Translation2d translation) {
-        return translation.getX() > 0.0 && translation.getY() > 0.0 && 
-               translation.getX() < Constants.Field.FIELD_X_SIZE && 
-               translation.getY() < Constants.Field.FIELD_Y_SIZE;
+        return translation.getX() > 0.0 && translation.getY() > 0.0 &&
+                translation.getX() < Constants.Field.FIELD_X_SIZE &&
+                translation.getY() < Constants.Field.FIELD_Y_SIZE;
     }
 
     public static Translation2d mirror(Translation2d translation) {
@@ -48,7 +48,9 @@ public class Utils {
 
     public static Pose2d mirror(Pose2d pose) {
         return new Pose2d(mirror(pose.getTranslation()), mirror(pose.getRotation()));
-    }    public static Translation2d mirrorIfRed(Translation2d translation) {
+    }
+
+    public static Translation2d mirrorIfRed(Translation2d translation) {
         return Robot.isRedAlliance() ? mirror(translation) : translation;
     }
 
@@ -61,12 +63,20 @@ public class Utils {
     }
 
     public static void addClosedLoopProperties(String name, TalonFX motor, SendableBuilder builder) {
-        builder.addDoubleProperty(name + " voltage (V)", () -> motor.getMotorVoltage().getValueAsDouble(), (value) -> {});
-//        builder.addDoubleProperty(name + " supply Current (As)", () -> motor.getSupplyCurrent().getValueAsDouble(), (value) -> {});
-//        builder.addDoubleProperty(name + " stator Current (A)", () -> motor.getStatorCurrent().getValueAsDouble(), (value) -> {});
-        builder.addDoubleProperty(name + " raw velocity", () -> motor.getVelocity().getValueAsDouble(), (value) -> {});
-        builder.addDoubleProperty(name + " raw acceleration", () -> motor.getAcceleration().getValueAsDouble(), (value) -> {});
-//        builder.addDoubleProperty(name + " position", () -> motor.getPosition().getValueAsDouble(), (value) -> {});
-//        builder.addDoubleProperty(name + " motion magic setpoint*360", () -> motor.getClosedLoopReference().getValueAsDouble() * 360.0, (value) -> {});
+        builder.addDoubleProperty(name + " voltage (V)", () -> motor.getMotorVoltage().getValueAsDouble(), (value) -> {
+        });
+        // builder.addDoubleProperty(name + " supply Current (As)", () ->
+        // motor.getSupplyCurrent().getValueAsDouble(), (value) -> {});
+        // builder.addDoubleProperty(name + " stator Current (A)", () ->
+        // motor.getStatorCurrent().getValueAsDouble(), (value) -> {});
+        builder.addDoubleProperty(name + " raw velocity", () -> motor.getVelocity().getValueAsDouble(), (value) -> {
+        });
+        builder.addDoubleProperty(name + " raw acceleration", () -> motor.getAcceleration().getValueAsDouble(),
+                (value) -> {
+                });
+        // builder.addDoubleProperty(name + " position", () ->
+        // motor.getPosition().getValueAsDouble(), (value) -> {});
+        // builder.addDoubleProperty(name + " motion magic setpoint*360", () ->
+        // motor.getClosedLoopReference().getValueAsDouble() * 360.0, (value) -> {});
     }
 }

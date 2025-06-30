@@ -15,7 +15,7 @@ import org.chillout1778.Utils;
 
 public class Intake extends SubsystemBase {
     private static Intake instance;
-    
+
     public static Intake getInstance() {
         if (instance == null) {
             instance = new Intake();
@@ -63,16 +63,18 @@ public class Intake extends SubsystemBase {
     private final TalonFX centeringMotor;
     private final DigitalInput linebreak;
 
-    public boolean isZeroed = false;    private Intake() {
+    public boolean isZeroed = false;
+
+    private Intake() {
         pivotMotor = new TalonFX(Constants.CanIds.INTAKE_PIVOT_MOTOR);
         pivotMotor.getConfigurator().apply(Constants.Intake.getPivotConfig());
-        
+
         rollerMotor = new TalonFX(Constants.CanIds.INTAKE_ROLLER_MOTOR);
         rollerMotor.getConfigurator().apply(new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive));
-        
+
         centeringMotor = new TalonFX(Constants.CanIds.INTAKE_CENTERING_MOTOR);
         centeringMotor.getConfigurator().apply(new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive));
-        
+
         linebreak = new DigitalInput(Constants.DioIds.INTAKE_LINEBREAK);
     }
 
@@ -80,7 +82,8 @@ public class Intake extends SubsystemBase {
         if (realPivotState != PivotState.OperatorControl) {
             return realPivotState;
         } else if (isUnsafeToGoUp()) {
-            return PivotState.Down;        } else if (hasCoral()) {
+            return PivotState.Down;
+        } else if (hasCoral()) {
             return PivotState.Up;
         } else if (Superstructure.getInstance().getInputs().getWantGroundIntake()) {
             return PivotState.Down;
@@ -99,7 +102,9 @@ public class Intake extends SubsystemBase {
         } else {
             return RollerState.Off;
         }
-    }    // Get angle in radians (factor of 2pi is handled by the gear ratio in motor config)
+    } // Get angle in radians (factor of 2pi is handled by the gear ratio in motor
+      // config)
+
     public double getAngle() {
         return pivotMotor.getPosition().getValueAsDouble() * 2 * Math.PI;
     }
@@ -110,14 +115,18 @@ public class Intake extends SubsystemBase {
 
     public boolean hasCoral() {
         return !linebreak.get() || Controls.operatorController.getHID().getTouchpadButton();
-    }    public boolean isAtSetpoint() {
+    }
+
+    public boolean isAtSetpoint() {
         return Math.abs(getAngle() - getEffectivePivotState().angleSetpoint) < Constants.Intake.SETPOINT_THRESHOLD;
     }
 
     // Add getter for atSetpoint to match the public field usage
     public boolean getAtSetpoint() {
         return isAtSetpoint();
-    }    public void zero() {
+    }
+
+    public void zero() {
         pivotMotor.setPosition(0.0); // reset relative encoder
         // Reset motion magic state - this ensures clean operation after zeroing
         pivotMotor.setControl(new VoltageOut(0.0)); // Stop any current motion
@@ -160,15 +169,16 @@ public class Intake extends SubsystemBase {
     }
 
     private boolean isUnsafeToGoUp() {
-        return Math.abs(MathUtil.angleModulus(Arm.getInstance().getPosition())) < 
-               Math.PI - Arm.getInstance().getElevatorToArm().get(Elevator.getInstance().getHeight());
+        return Math.abs(MathUtil.angleModulus(Arm.getInstance().getPosition())) < Math.PI
+                - Arm.getInstance().getElevatorToArm().get(Elevator.getInstance().getHeight());
     }
 
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Intake");
         builder.addDoubleProperty("Intake angle", () -> Math.toDegrees(getAngle()), null);
-        builder.addDoubleProperty("Intake setpoint", () -> Math.toDegrees(getEffectivePivotState().angleSetpoint), null);
+        builder.addDoubleProperty("Intake setpoint", () -> Math.toDegrees(getEffectivePivotState().angleSetpoint),
+                null);
         builder.addBooleanProperty("at setpoint?", this::isAtSetpoint, null);
         builder.addBooleanProperty("Intake have coral", this::hasCoral, null);
         builder.addStringProperty("Effective intake pivot state", () -> getEffectivePivotState().toString(), null);

@@ -16,7 +16,8 @@ public class ZeroArmCommand extends Command {
     }
 
     @Override
-    public void initialize() {        if (Arm.getInstance().isZeroed && !forced) { // VERY IMPORTANT, DO NOT REMOVE
+    public void initialize() {
+        if (Arm.getInstance().isZeroed && !forced) { // VERY IMPORTANT, DO NOT REMOVE
             this.cancel();
             return;
         }

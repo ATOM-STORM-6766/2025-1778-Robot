@@ -13,7 +13,7 @@ import org.chillout1778.Robot;
 
 public class Lights extends SubsystemBase {
     private static Lights instance;
-    
+
     public static Lights getInstance() {
         if (instance == null) {
             instance = new Lights();
@@ -24,19 +24,19 @@ public class Lights extends SubsystemBase {
     private static final int LENGTH = 86; // probs should be a constant
     private AddressableLED leds;
     private AddressableLEDBuffer ledBuff;
-    
+
     // LED segments
     private AddressableLEDBufferView rightSegment;
     private AddressableLEDBufferView crossSegment;
     private AddressableLEDBufferView leftSegment;
     private LEDPattern blackPattern = LEDPattern.solid(Color.kBlack);
     private Timer lightsTimer = new Timer();
-    
+
     // Additional LED patterns and animation variables
     private LEDPattern blinkyPattern = LEDPattern.solid(LedColors.GoodGreen.color).blink(Units.Seconds.of(0.15));
     private double progressBarAnimation = 0.0;
     private LEDPattern disabledRainbow = LEDPattern.rainbow(255, 255)
-                                                  .scrollAtRelativeSpeed(Units.Hertz.of(0.5));
+            .scrollAtRelativeSpeed(Units.Hertz.of(0.5));
 
     private Lights() {
         leds = new AddressableLED(3);
@@ -97,8 +97,8 @@ public class Lights extends SubsystemBase {
         public final boolean brakeMode;
         public final boolean intakeHasCoral;
 
-        public RobotStatus(boolean CANHealthy, boolean armCorrectOrientation, double batteryVoltage, 
-                          boolean camerasConnected, boolean brakeMode, boolean intakeHasCoral) {
+        public RobotStatus(boolean CANHealthy, boolean armCorrectOrientation, double batteryVoltage,
+                boolean camerasConnected, boolean brakeMode, boolean intakeHasCoral) {
             this.CANHealthy = CANHealthy;
             this.armCorrectOrientation = armCorrectOrientation;
             this.batteryVoltage = batteryVoltage;
@@ -125,16 +125,17 @@ public class Lights extends SubsystemBase {
             this.color = color;
             this.solidPattern = LEDPattern.solid(color);
         }
-    }    private RobotStatus getDisabledStatus() {
+    }
+
+    private RobotStatus getDisabledStatus() {
         // Simplified status check - using safe defaults for now
         return new RobotStatus(
-            true, // CAN healthy - simplified
-            Math.abs(0.5) == 0.5, // arm correct orientation - simplified
-            12.7, // battery voltage
-            true, // cameras connected - simplified 
-            true, // brake mode - simplified
-            Intake.getInstance().hasCoral()
-        );
+                true, // CAN healthy - simplified
+                Math.abs(0.5) == 0.5, // arm correct orientation - simplified
+                12.7, // battery voltage
+                true, // cameras connected - simplified
+                true, // brake mode - simplified
+                Intake.getInstance().hasCoral());
     }
 
     private Color boolColor(boolean b) {
@@ -177,7 +178,7 @@ public class Lights extends SubsystemBase {
         } else if (Robot.wasEnabledThenDisabled && lightsTimer.get() > 5.0) {
             Robot.wasEnabledThenDisabled = false;
             lightsTimer.restart();
-        // first two seconds after robot code boots up, complete a blue progressBar
+            // first two seconds after robot code boots up, complete a blue progressBar
         } else if (lightsTimer.get() <= 2.0) {
             progressBarAnimation += 0.02;
 
@@ -186,11 +187,11 @@ public class Lights extends SubsystemBase {
             }
 
             LEDPattern progressBarPattern = LEDPattern.solid(LedColors.LightBlue.color)
-                .mask(LEDPattern.progressMaskLayer(() -> progressBarAnimation));
+                    .mask(LEDPattern.progressMaskLayer(() -> progressBarAnimation));
 
             progressBarPattern.applyTo(rightSegment);
             progressBarPattern.applyTo(leftSegment);
-        // then recursively, every 10 seconds run a light across the bar
+            // then recursively, every 10 seconds run a light across the bar
         } else if (lightsTimer.get() % 10.0 <= 1.0) {
             nuclearRats(2.0, LedColors.TotalBlack, LedColors.LightBlue);
         }
@@ -198,19 +199,17 @@ public class Lights extends SubsystemBase {
 
     public void nuclearRats(double frequency, LedColors baseColor, LedColors overlayColor) {
         LEDPattern overlayStepsPattern = LEDPattern.gradient(
-            LEDPattern.GradientType.kContinuous,
-            baseColor.color,
-            overlayColor.color
-        );
+                LEDPattern.GradientType.kContinuous,
+                baseColor.color,
+                overlayColor.color);
         LEDPattern overlayStepsFinal = overlayStepsPattern.scrollAtRelativeSpeed(Units.Hertz.of(frequency));
 
         LEDPattern overlayCenterMask = LEDPattern.solid(baseColor.color);
         LEDPattern overlayCenterFlashed = overlayCenterMask.blink(
-            Units.Seconds.of(1.0/frequency),
-            Units.Seconds.of(1.0/frequency)
-        );
+                Units.Seconds.of(1.0 / frequency),
+                Units.Seconds.of(1.0 / frequency));
         LEDPattern overlayFinalPattern = overlayCenterMask.overlayOn(overlayCenterFlashed);
-        
+
         overlayStepsFinal.applyTo(leftSegment);
         overlayStepsFinal.applyTo(rightSegment);
         if (baseColor != LedColors.TotalBlack)

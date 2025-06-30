@@ -15,7 +15,9 @@ public class AutoRunnerCommand extends Command {
     public AutoRunnerCommand(Trajectory<SwerveSample> trajectory) {
         this.trajectory = trajectory;
         addRequirements(Superstructure.getInstance(), Swerve.getInstance());
-    }    @Override
+    }
+
+    @Override
     public void initialize() {
         timer.restart();
         // Reset pose estimator to trajectory's initial pose
@@ -26,12 +28,13 @@ public class AutoRunnerCommand extends Command {
 
     @Override
     public void execute() {
-        double currentTime = timer.get();        // Sample the trajectory at the current time
-        var sampleOpt = trajectory.sampleAt(currentTime, false);        if (sampleOpt.isPresent()) {
+        double currentTime = timer.get(); // Sample the trajectory at the current time
+        var sampleOpt = trajectory.sampleAt(currentTime, false);
+        if (sampleOpt.isPresent()) {
             SwerveSample sample = sampleOpt.get();
             // Follow the trajectory sample
             Swerve.getInstance().followSample(sample);
-            
+
             // Process trajectory events
             processTrajectoryEvents(currentTime);
         }
@@ -40,17 +43,19 @@ public class AutoRunnerCommand extends Command {
     @Override
     public boolean isFinished() {
         return timer.hasElapsed(trajectory.getTotalTime());
-    }    @Override
+    }
+
+    @Override
     public void end(boolean interrupted) {
         Swerve.getInstance().stop();
         timer.stop();
     }
-    
+
     private void processTrajectoryEvents(double currentTime) {
         // Process trajectory events based on event markers
         // This would typically handle things like:
         // - Starting intake
-        // - Scoring sequences  
+        // - Scoring sequences
         // - State changes
         // Implementation depends on specific trajectory event format
     }

@@ -21,13 +21,16 @@ import org.chillout1778.subsystems.*;
 public class Robot extends TimedRobot {
     public static boolean isRedAlliance() {
         return DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red;
-    }    public static boolean isOnRedSide() {        return Swerve.getInstance().getEstimatedPose().getX() > (Constants.Field.FIELD_X_SIZE / 2);
+    }
+
+    public static boolean isOnRedSide() {
+        return Swerve.getInstance().getEstimatedPose().getX() > (Constants.Field.FIELD_X_SIZE / 2);
     }
 
     public static boolean wasEnabledThenDisabled = false;
     public static boolean wasEnabled = false;
-    
-    // Add a simple enabled state tracker  
+
+    // Add a simple enabled state tracker
     private static boolean currentlyEnabled = false;
 
     public static boolean isCurrentlyEnabled() {
@@ -56,9 +59,10 @@ public class Robot extends TimedRobot {
 
         Shuffleboard.getTab("Subsystems").add(Arm.getInstance());
         Shuffleboard.getTab("Subsystems").add(Elevator.getInstance());
-        Shuffleboard.getTab("Subsystems").add(Intake.getInstance());        Shuffleboard.getTab("Subsystems").add(Superstructure.getInstance());
+        Shuffleboard.getTab("Subsystems").add(Intake.getInstance());
+        Shuffleboard.getTab("Subsystems").add(Superstructure.getInstance());
         Shuffleboard.getTab("Subsystems").add(Vision.getInstance());
-        
+
         for (String trajectoryName : Choreo.availableTrajectories()) {
             if (!trajectoryName.equals("VariablePoses")) {
                 autoChooser.addOption(trajectoryName, Choreo.<SwerveSample>loadTrajectory(trajectoryName).get());
@@ -85,7 +89,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
-        if (wasEnabled) wasEnabledThenDisabled = true;
+        if (wasEnabled)
+            wasEnabledThenDisabled = true;
         wasEnabled = false;
     }
 
@@ -118,9 +123,9 @@ public class Robot extends TimedRobot {
     private Command autonomousCommand = new InstantCommand();
 
     private void initializeAutonomousCommand() {
-        autonomousCommand = Superstructure.getInstance().makeZeroAllSubsystemsCommand().andThen( // EXTREMELY IMPORTANT TO ZERO
-            new AutoRunnerCommand(autoTrajectory)
-        ).andThen(new TeleopDriveCommand(() -> Controls.emptyInputs));
+        autonomousCommand = Superstructure.getInstance().makeZeroAllSubsystemsCommand().andThen( // EXTREMELY IMPORTANT
+                                                                                                 // TO ZERO
+                new AutoRunnerCommand(autoTrajectory)).andThen(new TeleopDriveCommand(() -> Controls.emptyInputs));
     }
 
     @Override

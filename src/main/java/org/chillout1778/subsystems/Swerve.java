@@ -19,7 +19,7 @@ import java.util.List;
 
 public class Swerve extends SubsystemBase {
     private static Swerve instance;
-    
+
     public static Swerve getInstance() {
         if (instance == null) {
             instance = new Swerve();
@@ -41,42 +41,38 @@ public class Swerve extends SubsystemBase {
 
         // The order doesn't matter to us, but PathPlannerLib prefers FL, FR, BL, BR.
         modules = new SwerveModule[] {
-            new SwerveModule(
-                "Front Left",
-                Constants.CanIds.SWERVE_FRONT_LEFT_DRIVE,
-                Constants.CanIds.SWERVE_FRONT_LEFT_TURN,
-                Constants.CanIds.SWERVE_FRONT_LEFT_CANCODER,
-                Constants.Swerve.FRONT_LEFT_ENCODER_OFFSET,
-                InvertedValue.CounterClockwise_Positive,
-                InvertedValue.Clockwise_Positive
-            ),
-            new SwerveModule(
-                "Front Right",
-                Constants.CanIds.SWERVE_FRONT_RIGHT_DRIVE,
-                Constants.CanIds.SWERVE_FRONT_RIGHT_TURN,
-                Constants.CanIds.SWERVE_FRONT_RIGHT_CANCODER,
-                Constants.Swerve.FRONT_RIGHT_ENCODER_OFFSET,
-                InvertedValue.Clockwise_Positive,
-                InvertedValue.Clockwise_Positive
-            ),
-            new SwerveModule(
-                "Back Left",
-                Constants.CanIds.SWERVE_BACK_LEFT_DRIVE,
-                Constants.CanIds.SWERVE_BACK_LEFT_TURN,
-                Constants.CanIds.SWERVE_BACK_LEFT_CANCODER,
-                Constants.Swerve.BACK_LEFT_ENCODER_OFFSET,
-                InvertedValue.CounterClockwise_Positive,
-                InvertedValue.Clockwise_Positive
-            ),
-            new SwerveModule(
-                "Back Right",
-                Constants.CanIds.SWERVE_BACK_RIGHT_DRIVE,
-                Constants.CanIds.SWERVE_BACK_RIGHT_TURN,
-                Constants.CanIds.SWERVE_BACK_RIGHT_CANCODER,
-                Constants.Swerve.BACK_RIGHT_ENCODER_OFFSET,
-                InvertedValue.Clockwise_Positive,
-                InvertedValue.Clockwise_Positive
-            )
+                new SwerveModule(
+                        "Front Left",
+                        Constants.CanIds.SWERVE_FRONT_LEFT_DRIVE,
+                        Constants.CanIds.SWERVE_FRONT_LEFT_TURN,
+                        Constants.CanIds.SWERVE_FRONT_LEFT_CANCODER,
+                        Constants.Swerve.FRONT_LEFT_ENCODER_OFFSET,
+                        InvertedValue.CounterClockwise_Positive,
+                        InvertedValue.Clockwise_Positive),
+                new SwerveModule(
+                        "Front Right",
+                        Constants.CanIds.SWERVE_FRONT_RIGHT_DRIVE,
+                        Constants.CanIds.SWERVE_FRONT_RIGHT_TURN,
+                        Constants.CanIds.SWERVE_FRONT_RIGHT_CANCODER,
+                        Constants.Swerve.FRONT_RIGHT_ENCODER_OFFSET,
+                        InvertedValue.Clockwise_Positive,
+                        InvertedValue.Clockwise_Positive),
+                new SwerveModule(
+                        "Back Left",
+                        Constants.CanIds.SWERVE_BACK_LEFT_DRIVE,
+                        Constants.CanIds.SWERVE_BACK_LEFT_TURN,
+                        Constants.CanIds.SWERVE_BACK_LEFT_CANCODER,
+                        Constants.Swerve.BACK_LEFT_ENCODER_OFFSET,
+                        InvertedValue.CounterClockwise_Positive,
+                        InvertedValue.Clockwise_Positive),
+                new SwerveModule(
+                        "Back Right",
+                        Constants.CanIds.SWERVE_BACK_RIGHT_DRIVE,
+                        Constants.CanIds.SWERVE_BACK_RIGHT_TURN,
+                        Constants.CanIds.SWERVE_BACK_RIGHT_CANCODER,
+                        Constants.Swerve.BACK_RIGHT_ENCODER_OFFSET,
+                        InvertedValue.Clockwise_Positive,
+                        InvertedValue.Clockwise_Positive)
         };
 
         fieldEstimate = new Field2d();
@@ -88,19 +84,19 @@ public class Swerve extends SubsystemBase {
         Shuffleboard.getTab("Swerve").add("Swerve Estimated Pose Field", fieldEstimate);
 
         kinematics = new SwerveDriveKinematics(
-            new Translation2d(Constants.Swerve.XY_DISTANCE, Constants.Swerve.XY_DISTANCE), // FL
-            new Translation2d(Constants.Swerve.XY_DISTANCE, -Constants.Swerve.XY_DISTANCE), // FR
-            new Translation2d(-Constants.Swerve.XY_DISTANCE, Constants.Swerve.XY_DISTANCE), // BL
-            new Translation2d(-Constants.Swerve.XY_DISTANCE, -Constants.Swerve.XY_DISTANCE) // BR
+                new Translation2d(Constants.Swerve.XY_DISTANCE, Constants.Swerve.XY_DISTANCE), // FL
+                new Translation2d(Constants.Swerve.XY_DISTANCE, -Constants.Swerve.XY_DISTANCE), // FR
+                new Translation2d(-Constants.Swerve.XY_DISTANCE, Constants.Swerve.XY_DISTANCE), // BL
+                new Translation2d(-Constants.Swerve.XY_DISTANCE, -Constants.Swerve.XY_DISTANCE) // BR
         );
 
         poseEstimator = new SwerveDrivePoseEstimator(
-            kinematics,
-            new Rotation2d(getGyroAngle()),
-            getModulePositions(),
-            new Pose2d(0.0, 0.0, new Rotation2d(getGyroAngle())),
-            VecBuilder.fill(0.1, 0.1, 0.1), // odometry
-            VecBuilder.fill(0.9, 0.9, 2.0) // vision
+                kinematics,
+                new Rotation2d(getGyroAngle()),
+                getModulePositions(),
+                new Pose2d(0.0, 0.0, new Rotation2d(getGyroAngle())),
+                VecBuilder.fill(0.1, 0.1, 0.1), // odometry
+                VecBuilder.fill(0.9, 0.9, 2.0) // vision
         );
     }
 
@@ -138,11 +134,9 @@ public class Swerve extends SubsystemBase {
 
     public void driveFieldRelative(ChassisSpeeds speeds) {
         driveRobotRelative(
-            ChassisSpeeds.fromFieldRelativeSpeeds(
-                speeds,
-                getEstimatedPose().getRotation()
-            )
-        );
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                        speeds,
+                        getEstimatedPose().getRotation()));
     }
 
     public void driveRobotRelative(ChassisSpeeds speeds) {
@@ -152,80 +146,93 @@ public class Swerve extends SubsystemBase {
             modules[i].driveState(moduleStates[i]);
         }
         poseEstimator.update(new Rotation2d(getGyroAngle()), getModulePositions());
-    }    public void stop() {
+    }
+
+    public void stop() {
         driveRobotRelative(new ChassisSpeeds());
     }
-    
+
     // Trajectory following methods
     public void resetPose(Pose2d pose) {
         poseEstimator.resetPosition(new Rotation2d(getGyroAngle()), getModulePositions(), pose);
     }
-      public void followSample(Object sample) {
+
+    public void followSample(Object sample) {
         // Choreo sample following implementation
         // Note: Implementation depends on specific Choreo API version
         // The sample would typically contain velocity and position targets
         // that are used to drive the swerve modules
-        
+
         // Placeholder implementation - in practice this would:
         // 1. Extract velocities from the sample
         // 2. Convert to chassis speeds
         // 3. Drive the robot using those speeds
-        
+
         if (sample != null) {
             // driveFieldRelative(chassisSpeedsFromSample(sample));
             System.out.println("Following trajectory sample");
         }
     }// Alignment and scoring pose methods
+
     private double scoreForPose(Pose2d pose) {
         // Simple scoring based on distance from current pose
         Pose2d currentPose = getEstimatedPose();
         return currentPose.getTranslation().getDistance(pose.getTranslation());
     }
-    
+
     public Pose2d getClosestTroughScoringPose() {
-        List<Pose2d> poses = org.chillout1778.Robot.isRedAlliance() ? 
-            Constants.Field.redTroughScoringPoses : Constants.Field.blueTroughScoringPoses;
-        
+        List<Pose2d> poses = org.chillout1778.Robot.isRedAlliance() ? Constants.Field.redTroughScoringPoses
+                : Constants.Field.blueTroughScoringPoses;
+
         // Filter poses within reasonable distance
         Pose2d currentPose = getEstimatedPose();
         return poses.stream()
-            .filter(pose -> pose.getTranslation().getDistance(currentPose.getTranslation()) < Constants.Swerve.MAX_NODE_DISTANCE)
-            .min((p1, p2) -> Double.compare(scoreForPose(p1), scoreForPose(p2)))
-            .orElse(new Pose2d()); // Default fallback
+                .filter(pose -> pose.getTranslation()
+                        .getDistance(currentPose.getTranslation()) < Constants.Swerve.MAX_NODE_DISTANCE)
+                .min((p1, p2) -> Double.compare(scoreForPose(p1), scoreForPose(p2)))
+                .orElse(new Pose2d()); // Default fallback
     }
 
     public class FudgedPose {
         public Pose2d value;
-        public FudgedPose(Pose2d pose) { this.value = pose; }
-    }    public FudgedPose getClosestFudgedScoringPose() {
-        List<Pose2d> poses = org.chillout1778.Robot.isRedAlliance() ? 
-            Constants.Field.redScoringPoses : Constants.Field.blueScoringPoses;
-        
+
+        public FudgedPose(Pose2d pose) {
+            this.value = pose;
+        }
+    }
+
+    public FudgedPose getClosestFudgedScoringPose() {
+        List<Pose2d> poses = org.chillout1778.Robot.isRedAlliance() ? Constants.Field.redScoringPoses
+                : Constants.Field.blueScoringPoses;
+
         Pose2d currentPose = getEstimatedPose();
         Pose2d closestPose = poses.stream()
-            .filter(pose -> pose.getTranslation().getDistance(currentPose.getTranslation()) < Constants.Swerve.MAX_NODE_DISTANCE)
-            .min((p1, p2) -> Double.compare(scoreForPose(p1), scoreForPose(p2)))
-            .orElse(new Pose2d());
-            
+                .filter(pose -> pose.getTranslation()
+                        .getDistance(currentPose.getTranslation()) < Constants.Swerve.MAX_NODE_DISTANCE)
+                .min((p1, p2) -> Double.compare(scoreForPose(p1), scoreForPose(p2)))
+                .orElse(new Pose2d());
+
         return new FudgedPose(closestPose);
     }
 
     public Pose2d getClosestAlgaeGrabPose() {
-        List<Pose2d> poses = org.chillout1778.Robot.isRedAlliance() ? 
-            Constants.Field.redAlgaeGrabbingPose : Constants.Field.blueAlgaeGrabbingPose;
-        
+        List<Pose2d> poses = org.chillout1778.Robot.isRedAlliance() ? Constants.Field.redAlgaeGrabbingPose
+                : Constants.Field.blueAlgaeGrabbingPose;
+
         Pose2d currentPose = getEstimatedPose();
         return poses.stream()
-            .filter(pose -> pose.getTranslation().getDistance(currentPose.getTranslation()) < Constants.Swerve.MAX_NODE_DISTANCE)
-            .min((p1, p2) -> Double.compare(scoreForPose(p1), scoreForPose(p2)))
-            .orElse(new Pose2d()); // Default fallback
-    }@Override
+                .filter(pose -> pose.getTranslation()
+                        .getDistance(currentPose.getTranslation()) < Constants.Swerve.MAX_NODE_DISTANCE)
+                .min((p1, p2) -> Double.compare(scoreForPose(p1), scoreForPose(p2)))
+                .orElse(new Pose2d()); // Default fallback
+    }
+
+    @Override
     public void periodic() {
         Vision.getInstance().periodicAddMeasurements(poseEstimator);
         poseEstimator.update(
-            new Rotation2d(getGyroAngle()),
-            getModulePositions()
-        );
+                new Rotation2d(getGyroAngle()),
+                getModulePositions());
         fieldEstimate.setRobotPose(poseEstimator.getEstimatedPosition());
     }
 

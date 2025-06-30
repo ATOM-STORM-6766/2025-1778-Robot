@@ -1,0 +1,15 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Robot/SendableChooser[0]": "String Chooser",
+      "/Shuffleboard/Subsystems/Superstructure": "Subsystem",
+      "/Shuffleboard/Swerve/Swerve Estimated Pose Field": "Field2d",
+      "/SmartDashboard/Choreo Alerts": "Alerts",
+      "/SmartDashboard/PhotonAlerts": "Alerts"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}

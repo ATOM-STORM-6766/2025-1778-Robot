@@ -12,7 +12,7 @@ import org.photonvision.estimation.TargetModel;
 
 public class Vision extends SubsystemBase {
     private static Vision instance;
-    
+
     public static Vision getInstance() {
         if (instance == null) {
             instance = new Vision();
@@ -26,10 +26,9 @@ public class Vision extends SubsystemBase {
         public Camera(String initialName, Transform3d robotToCamera) {
             super(initialName);
             this.poseEstimator = new PhotonPoseEstimator(
-                AprilTagFieldLayout.loadField(Constants.Vision.FIELD_TYPE),
-                PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                robotToCamera
-            );
+                    AprilTagFieldLayout.loadField(Constants.Vision.FIELD_TYPE),
+                    PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+                    robotToCamera);
             poseEstimator.setTagModel(TargetModel.kAprilTag36h11);
             poseEstimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
         }
@@ -42,11 +41,11 @@ public class Vision extends SubsystemBase {
     private final Camera[] cameras;
 
     private Vision() {
-        cameras = new Camera[]{
-            new Camera(Constants.Vision.FRONT_RIGHT_NAME, Constants.Vision.FRONT_RIGHT_TRANSFORM),
-            new Camera(Constants.Vision.FRONT_LEFT_NAME, Constants.Vision.FRONT_LEFT_TRANSFORM),
-            new Camera(Constants.Vision.BACK_RIGHT_NAME, Constants.Vision.BACK_RIGHT_TRANSFORM),
-            new Camera(Constants.Vision.BACK_LEFT_NAME, Constants.Vision.BACK_LEFT_TRANSFORM)
+        cameras = new Camera[] {
+                new Camera(Constants.Vision.FRONT_RIGHT_NAME, Constants.Vision.FRONT_RIGHT_TRANSFORM),
+                new Camera(Constants.Vision.FRONT_LEFT_NAME, Constants.Vision.FRONT_LEFT_TRANSFORM),
+                new Camera(Constants.Vision.BACK_RIGHT_NAME, Constants.Vision.BACK_RIGHT_TRANSFORM),
+                new Camera(Constants.Vision.BACK_LEFT_NAME, Constants.Vision.BACK_LEFT_TRANSFORM)
         };
     }
 
@@ -57,16 +56,18 @@ public class Vision extends SubsystemBase {
             }
         }
         return true;
-    }    public void periodicAddMeasurements(SwerveDrivePoseEstimator poseEstimator) {
+    }
+
+    public void periodicAddMeasurements(SwerveDrivePoseEstimator poseEstimator) {
         // Full PhotonVision pose estimation implementation
         for (Camera camera : cameras) {
             if (camera.isConnected()) {
                 // Note: PhotonVision API may vary between versions
                 // This is a framework for when the exact API is confirmed
-                
+
                 // Basic camera processing would go here
                 // Implementation depends on PhotonVision version and API availability
-                
+
                 System.out.println("Processing camera: " + camera.getName());
             }
         }
@@ -82,10 +83,9 @@ public class Vision extends SubsystemBase {
     public void initSendable(SendableBuilder builder) {
         for (Camera camera : cameras) {
             builder.addBooleanProperty(
-                camera.getName() + " connection status",
-                camera::isConnected,
-                null
-            );
+                    camera.getName() + " connection status",
+                    camera::isConnected,
+                    null);
         }
     }
 }
