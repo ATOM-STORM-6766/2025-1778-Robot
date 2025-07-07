@@ -91,6 +91,10 @@ public class SwerveModule implements Sendable {
         return driveMotor.getPosition().getValueAsDouble() * 2 * Math.PI * Constants.Swerve.WHEEL_RADIUS;
     }
 
+    private double getDriveAcceleration() {
+        return driveMotor.getAcceleration().getValueAsDouble() * 2 * Math.PI * Constants.Swerve.WHEEL_RADIUS;
+    }
+
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(getDrivePosition(), new Rotation2d(getTurnPosition()));
     }
@@ -110,15 +114,14 @@ public class SwerveModule implements Sendable {
         turnMotor.setVoltage(turnPID.calculate(getTurnPosition(), goalTurnPosition));
 
         // Use feedforward control for drive motor
-        commandedVolts = driveFeedforward.calculate(goalDriveVelocity);
+        commandedVolts = driveFeedforward.calculate(goalDriveVelocity, getDriveAcceleration());
         driveMotor.setVoltage(commandedVolts);
     }
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType("SwerveModule");
-        builder.addDoubleProperty("raw cancoder position", () -> canCoder.getAbsolutePosition().getValueAsDouble(),
-                null);
+        builder.clearProperties();
+        builder.addDoubleProperty("raw cancoder position", () -> canCoder.getAbsolutePosition().getValueAsDouble(), null);
         builder.addDoubleProperty("turn position (deg)", () -> Math.toDegrees(getTurnPosition()), null);
         builder.addDoubleProperty("drive velocity (mps)", this::getDriveVelocity, null);
         builder.addDoubleProperty("drive stator current", () -> driveMotor.getStatorCurrent().getValueAsDouble(), null);

@@ -35,7 +35,15 @@ public class Swerve extends SubsystemBase {
 
     public boolean isAligned = false;
 
+    private final PIDController xController = new PIDController(12.0, 0.0, 0.0);
+    private final PIDController yController = new PIDController(12.0, 0.0, 0.0);
+    private final PIDController headingController = new PIDController(5.0, 0.0, 0.0);
+    private final boolean[] probablyScoredPoses = new boolean[24 * 4];
+
+
     private Swerve() {
+        headingController.enableContinuousInput(-Math.PI, Math.PI);
+
         gyro = new Pigeon2(Constants.CanIds.GYRO);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
 
@@ -181,8 +189,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public Pose2d getClosestTroughScoringPose() {
-        List<Pose2d> poses = org.chillout1778.Robot.isRedAlliance() ? Constants.Field.redTroughScoringPoses
-                : Constants.Field.blueTroughScoringPoses;
+        List<Pose2d> poses = Robot.isRedAlliance() ? Constants.Field.redTroughScoringPoses : Constants.Field.blueTroughScoringPoses;
 
         // Filter poses within reasonable distance
         Pose2d currentPose = getEstimatedPose();
@@ -202,8 +209,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public FudgedPose getClosestFudgedScoringPose() {
-        List<Pose2d> poses = org.chillout1778.Robot.isRedAlliance() ? Constants.Field.redScoringPoses
-                : Constants.Field.blueScoringPoses;
+        List<Pose2d> poses = Robot.isRedAlliance() ? Constants.Field.redScoringPoses : Constants.Field.blueScoringPoses;
 
         Pose2d currentPose = getEstimatedPose();
         Pose2d closestPose = poses.stream()
@@ -215,16 +221,42 @@ public class Swerve extends SubsystemBase {
         return new FudgedPose(closestPose);
     }
 
-    public Pose2d getClosestAlgaeGrabPose() {
-        List<Pose2d> poses = org.chillout1778.Robot.isRedAlliance() ? Constants.Field.redAlgaeGrabbingPose
-                : Constants.Field.blueAlgaeGrabbingPose;
+    private double score(Pose2d p) {
+        double translation = p.getTranslation().getDistance(getEstimatedPose().getTranslation());
+        double rotation = Math.abs(p.getRotation().minus(getEstimatedPose().getRotation()).getRadians());
+        return Constants.Swerve.ALIGN_TRANSLATION_WEIGHT * translation +
+                Constants.Swerve.ALIGN_ANGLE_WEIGHT * rotation;
+    }
 
+    public void markPoseScored() {
+        IndexedValue<Pose2d> idxVal = getClosestFudgedScoringPose();
+        if (idxVal == null) return;
+        int idx = idxVal.getIndex();
+        probablyScoredPoses[idx * 4 + Superstructure.getInstance().getInputs().getWantedScoringLevel().ordinal()] = true;
+    }
+
+    public boolean wasPoseScored(int idx) {
+        return probablyScoredPoses[idx * 4 + Superstructure.getInstance().getInputs().getWantedScoringLevel().ordinal()];
+    }
+
+    public Pose2d getClosestAlgaeGrabPose() {
+        List<Pose2d> poses = Robot.isRedAlliance() ? Constants.Field.redAlgaeGrabbingPose : Constants.Field.blueAlgaeGrabbingPose;
         Pose2d currentPose = getEstimatedPose();
         return poses.stream()
                 .filter(pose -> pose.getTranslation()
                         .getDistance(currentPose.getTranslation()) < Constants.Swerve.MAX_NODE_DISTANCE)
-                .min((p1, p2) -> Double.compare(scoreForPose(p1), scoreForPose(p2)))
-                .orElse(new Pose2d()); // Default fallback
+                .min((p1, p2) -> Double.compare(score(p1), score(p2)))
+                .orElse(null);
+    }
+
+    public boolean isAtGoodScoringDistance() {
+        double x = getEstimatedPose().getX();
+        double tol = 0.1;
+        if (!Robot.isOnRedSide()) {
+            return x > Constants.Field.BLUE_BARGE_SCORING_X - tol && x < Constants.Field.BLUE_BARGE_SCORING_X + tol;
+        } else {
+            return x > Constants.Field.RED_BARGE_SCORING_X - tol && x < Constants.Field.RED_BARGE_SCORING_X + tol;
+        }
     }
 
     @Override
