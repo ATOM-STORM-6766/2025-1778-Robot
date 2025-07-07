@@ -63,7 +63,7 @@ public class Intake extends SubsystemBase {
     private final TalonFX centeringMotor;
     private final DigitalInput linebreak;
 
-    public boolean isZeroed = false;
+    private boolean isZeroed = false;
 
     private Intake() {
         pivotMotor = new TalonFX(Constants.CanIds.INTAKE_PIVOT_MOTOR);
@@ -78,6 +78,7 @@ public class Intake extends SubsystemBase {
         linebreak = new DigitalInput(Constants.DioIds.INTAKE_LINEBREAK);
     }
 
+    // Kotlin: val effectivePivotState get(): PivotState { ... }
     public PivotState getEffectivePivotState() {
         if (realPivotState != PivotState.OperatorControl) {
             return realPivotState;
@@ -85,51 +86,54 @@ public class Intake extends SubsystemBase {
             return PivotState.Down;
         } else if (hasCoral()) {
             return PivotState.Up;
-        } else if (Superstructure.getInstance().getInputs().getWantGroundIntake()) {
+        } else if (Superstructure.getInstance().inputs.wantGroundIntake) {
             return PivotState.Down;
         } else {
             return PivotState.Up;
         }
     }
 
+    // Kotlin: val effectiveRollerState get(): RollerState { ... }
     public RollerState getEffectiveRollerState() {
         if (realRollerState != RollerState.OperatorControl) {
             return realRollerState;
-        } else if (Superstructure.getInstance().getInputs().getWantGroundIntake()) {
+        } else if (Superstructure.getInstance().inputs.wantGroundIntake) {
             return RollerState.In;
         } else if (hasCoral()) {
             return RollerState.SlowIn;
         } else {
             return RollerState.Off;
         }
-    } // Get angle in radians (factor of 2pi is handled by the gear ratio in motor
-      // config)
+    }
 
+    // Kotlin: val angle get() = pivotMotor.position.valueAsDouble * 2*Math.PI
     public double getAngle() {
         return pivotMotor.getPosition().getValueAsDouble() * 2 * Math.PI;
     }
 
+    // Kotlin: val velocity get() = pivotMotor.velocity.valueAsDouble * 2*Math.PI
     public double getVelocity() {
         return pivotMotor.getVelocity().getValueAsDouble() * 2 * Math.PI;
     }
 
+    // Kotlin: val hasCoral get() = !linebreak.get() || Controls.operatorController.hid.touchpadButton
     public boolean hasCoral() {
-        return !linebreak.get() || Controls.operatorController.getHID().getTouchpadButton();
+        return !linebreak.get() || Controls.operatorController.hid.touchpadButton;
     }
 
+    // Kotlin: val atSetpoint get() = Math.abs(angle - effectivePivotState.angleSetpoint) < Constants.Intake.SETPOINT_THRESHOLD
     public boolean isAtSetpoint() {
         return Math.abs(getAngle() - getEffectivePivotState().angleSetpoint) < Constants.Intake.SETPOINT_THRESHOLD;
     }
 
-    // Add getter for atSetpoint to match the public field usage
-    public boolean getAtSetpoint() {
-        return isAtSetpoint();
+    // Kotlin: var isZeroed: Boolean = false
+    public boolean isZeroed() {
+        return isZeroed;
     }
 
     public void zero() {
         pivotMotor.setPosition(0.0); // reset relative encoder
-        // Reset motion magic state - this ensures clean operation after zeroing
-        pivotMotor.setControl(new VoltageOut(0.0)); // Stop any current motion
+        // 与 Kotlin 保持一致，不再调用 setControl(new VoltageOut(0.0))
         isZeroed = true;
     }
 
@@ -153,10 +157,11 @@ public class Intake extends SubsystemBase {
         centeringMotor.setVoltage(getEffectiveRollerState().centeringVoltage);
     }
 
+    // Kotlin: fun setState(p: PivotState, r: RollerState)
     public void setState(PivotState p, RollerState r) {
         realPivotState = p;
-        if (hasCoral() && r == RollerState.Off) { // what in the world is this...
-            if (Controls.superstructureInputs().getWantedScoringLevel() != Superstructure.ScoringLevel.TROUGH) {
+        if (hasCoral() && r == RollerState.Off) {
+            if (Controls.superstructureInputs.wantedScoringLevel != Superstructure.ScoringLevel.TROUGH) {
                 realRollerState = RollerState.In;
             } else {
                 realRollerState = RollerState.SlowIn;
@@ -168,7 +173,8 @@ public class Intake extends SubsystemBase {
         }
     }
 
-    private boolean isUnsafeToGoUp() {
+    // Kotlin: private val unsafeToGoUp: Boolean get() { ... }
+    public boolean isUnsafeToGoUp() {
         return Math.abs(MathUtil.angleModulus(Arm.getInstance().getPosition())) < Math.PI
                 - Arm.getInstance().getElevatorToArm().get(Elevator.getInstance().getHeight());
     }
@@ -177,13 +183,12 @@ public class Intake extends SubsystemBase {
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Intake");
         builder.addDoubleProperty("Intake angle", () -> Math.toDegrees(getAngle()), null);
-        builder.addDoubleProperty("Intake setpoint", () -> Math.toDegrees(getEffectivePivotState().angleSetpoint),
-                null);
+        builder.addDoubleProperty("Intake setpoint", () -> Math.toDegrees(getEffectivePivotState().angleSetpoint), null);
         builder.addBooleanProperty("at setpoint?", this::isAtSetpoint, null);
         builder.addBooleanProperty("Intake have coral", this::hasCoral, null);
         builder.addStringProperty("Effective intake pivot state", () -> getEffectivePivotState().toString(), null);
         builder.addStringProperty("Underlying intake pivot state", () -> realPivotState.toString(), null);
-        builder.addBooleanProperty("Is Zeroed?", () -> isZeroed, null);
+        builder.addBooleanProperty("Is Zeroed?", this::isZeroed, null);
         Utils.addClosedLoopProperties("Intake Pivot", pivotMotor, builder);
         builder.addBooleanProperty("unsafe for intake to go up?", this::isUnsafeToGoUp, null);
     }
