@@ -6,17 +6,17 @@ import org.chillout1778.subsystems.Superstructure;
 
 public class TeleopSuperstructureCommand extends Command {
 
-    public TeleopSuperstructureCommand() {
-        addRequirements(Superstructure.getInstance());
-    }
+  public TeleopSuperstructureCommand() {
+    addRequirements(Superstructure.getInstance());
+  }
 
-    @Override
-    public void execute() {
-        Superstructure.getInstance().setInputs(Controls.superstructureInputs());
-    }
+  @Override
+  public void execute() {
+    Superstructure.getInstance().setInputs(Controls.superstructureInputs());
+  }
 
-    @Override
-    public void end(boolean interrupted) {
-        Superstructure.getInstance().emptyInputs();
-    }
+  @Override
+  public void end(boolean interrupted) {
+    Superstructure.getInstance().emptyInputs();
+  }
 }
