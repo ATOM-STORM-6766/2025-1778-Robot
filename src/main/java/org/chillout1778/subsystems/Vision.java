@@ -6,9 +6,16 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.chillout1778.Constants;
+import org.chillout1778.Utils;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.estimation.TargetModel;
+import org.photonvision.targeting.PhotonPipelineResult;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Vision extends SubsystemBase {
     private static Vision instance;
@@ -58,17 +65,36 @@ public class Vision extends SubsystemBase {
         return true;
     }
 
-    public void periodicAddMeasurements(SwerveDrivePoseEstimator poseEstimator) {
-        // Full PhotonVision pose estimation implementation
+    public boolean removeResult(PhotonPipelineResult res) {
+        List<Integer> targetIds = Arrays.asList(4, 5, 14, 15);
+        return res.getTargets().stream()
+                .map(target -> target.getFiducialId())
+                .anyMatch(targetIds::contains);
+    }
+
+    public void periodicAddMeasurements(SwerveDrivePoseEstimator estimator) {
         for (Camera camera : cameras) {
             if (camera.isConnected()) {
-                // Note: PhotonVision API may vary between versions
-                // This is a framework for when the exact API is confirmed
+                List<PhotonPipelineResult> results = camera.getAllUnreadResults().stream()
+                        .filter(result -> !removeResult(result))
+                        .collect(Collectors.toList());
 
-                // Basic camera processing would go here
-                // Implementation depends on PhotonVision version and API availability
-
-                System.out.println("Processing camera: " + camera.getName());
+                for (PhotonPipelineResult result : results) {
+                    Optional<PhotonPoseEstimator.PoseEstimate> poseEstimate = camera.getPoseEstimator().update(result);
+                    if (poseEstimate.isPresent()) {
+                        PhotonPoseEstimator.PoseEstimate pose = poseEstimate.get();
+                        if (Utils.isInsideField(pose.getEstimatedPose().getTranslation().toTranslation2d()) &&
+                                (pose.getStrategy() == PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR ||
+                                        (pose.getStrategy() == PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY &&
+                                                pose.getTargetsUsed().get(0).getPoseAmbiguity() < 0.05 &&
+                                                pose.getTargetsUsed().get(0).getArea() > 0.25))) {
+                            estimator.addVisionMeasurement(
+                                    pose.getEstimatedPose().toPose2d(),
+                                    pose.getTimestampSeconds()
+                            );
+                        }
+                    }
+                }
             }
         }
     }
