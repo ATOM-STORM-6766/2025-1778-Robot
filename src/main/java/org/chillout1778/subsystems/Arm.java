@@ -5,7 +5,6 @@ import static org.chillout1778.Constants.Field.BLUE_REEF_CENTER;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
@@ -14,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Arrays;
@@ -129,7 +129,7 @@ public class Arm extends SubsystemBase {
     }
   }
 
-  private final CANcoder absoluteEncoder;
+  private final DutyCycleEncoder absoluteEncoder;
   private final TalonFX armPivotMotor;
   private final TalonFX rollerMotor;
   private final StatusSignal<Current> statorCurrentSignal;
@@ -376,7 +376,7 @@ public class Arm extends SubsystemBase {
   private double armOffsetRadians = 0.0;
 
   private Arm() {
-    absoluteEncoder = new CANcoder(Constants.CanIds.ARM_ENCODER);
+    absoluteEncoder = new DutyCycleEncoder(Constants.DioIds.ARM_ABSOLUTE_ENCODER);
     armPivotMotor = new TalonFX(Constants.CanIds.ARM_PIVOT_MOTOR);
     armPivotMotor.getConfigurator().apply(Constants.Arm.getPivotConfig());
 
@@ -422,9 +422,8 @@ public class Arm extends SubsystemBase {
   }
 
   public double getCloseClampedPosition() {
-    double x =
-        absoluteEncoder.getPosition().getValueAsDouble()
-            - Constants.Arm.PIVOT_ABS_ENCODER_OFFSET_ENCODER_ROTATIONS;
+    // DutyCycleEncoder returns position as a value between 0.0 and 1.0 (rotations)
+    double x = absoluteEncoder.get() - Constants.Arm.PIVOT_ABS_ENCODER_OFFSET_ENCODER_ROTATIONS;
     while (x < -0.5) x += 1.0;
     while (x > 0.5) x -= 1.0;
     double rawReadingArmRotations = x * Constants.Arm.PIVOT_ENCODER_RATIO;
@@ -478,8 +477,7 @@ public class Arm extends SubsystemBase {
   public void initSendable(SendableBuilder builder) {
     builder.addDoubleProperty("Arm offset (deg)", () -> Math.toDegrees(armOffsetRadians), null);
     builder.addDoubleProperty("Arm position (deg)", () -> Math.toDegrees(getPosition()), null);
-    builder.addDoubleProperty(
-        "Raw Encoder", () -> absoluteEncoder.getPosition().getValueAsDouble(), null);
+    builder.addDoubleProperty("Raw Encoder", () -> absoluteEncoder.get(), null);
     builder.addBooleanProperty("Has object?", () -> hasObject, null);
     builder.addDoubleProperty(
         "Desired position (deg)", () -> Math.toDegrees(getDesiredPosition()), null);
