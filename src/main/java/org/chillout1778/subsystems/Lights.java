@@ -1,6 +1,8 @@
 package org.chillout1778.subsystems;
 
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Frequency;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
@@ -10,10 +12,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.chillout1778.Robot;
+import static java.lang.Math.abs;
 
 public class Lights extends SubsystemBase {
     private static Lights instance;
-
     public static Lights getInstance() {
         if (instance == null) {
             instance = new Lights();
@@ -21,22 +23,25 @@ public class Lights extends SubsystemBase {
         return instance;
     }
 
+    // right - 34 leds, left - 33, cross - 20
     private static final int LENGTH = 86; // probs should be a constant
-    private AddressableLED leds;
-    private AddressableLEDBuffer ledBuff;
+    private final AddressableLED leds;
+    private final AddressableLEDBuffer ledBuff;
 
     // LED segments
-    private AddressableLEDBufferView rightSegment;
-    private AddressableLEDBufferView crossSegment;
-    private AddressableLEDBufferView leftSegment;
-    private LEDPattern blackPattern = LEDPattern.solid(Color.kBlack);
-    private Timer lightsTimer = new Timer();
+    private final AddressableLEDBufferView rightSegment;
+    private final AddressableLEDBufferView crossSegment;
+    private final AddressableLEDBufferView leftSegment;
+    private final AddressableLEDBufferView batteryIndicator;
+    private final AddressableLEDBufferView batteryIndicatorMirror;
 
-    // Additional LED patterns and animation variables
-    private LEDPattern blinkyPattern = LEDPattern.solid(LedColors.GoodGreen.color).blink(Units.Seconds.of(0.15));
+    private final LEDPattern blackPattern = LEDPattern.solid(Color.kBlack);
+    private final Timer lightsTimer = new Timer();
     private double progressBarAnimation = 0.0;
-    private LEDPattern disabledRainbow = LEDPattern.rainbow(255, 255)
-            .scrollAtRelativeSpeed(Units.Hertz.of(0.5));
+    private final LEDPattern disabledRainbow = LEDPattern.rainbow(255, 255)
+            .scrollAtRelativeSpeed(Frequency.ofBaseUnits(0.5, Units.Hertz));
+    private final LEDPattern blinkyPattern = LEDPattern.solid(LedColors.GoodGreen.color).blink(Units.Seconds.of(0.15));
+    private boolean allChecksGood = false;
 
     private Lights() {
         leds = new AddressableLED(3);
@@ -46,9 +51,8 @@ public class Lights extends SubsystemBase {
         rightSegment = ledBuff.createView(0, 32); // right segment
         crossSegment = ledBuff.createView(33, 52); // cross segment
         leftSegment = ledBuff.createView(53, 85).reversed(); // left segment
-
-        ledBuff.createView(34, 48);
-        ledBuff.createView(49, 53).reversed();
+        batteryIndicator = ledBuff.createView(34, 48); // battery charge progress bar
+        batteryIndicatorMirror = ledBuff.createView(49, 53).reversed();
 
         lightsTimer.reset();
         lightsTimer.start();
@@ -60,7 +64,7 @@ public class Lights extends SubsystemBase {
     @Override
     public void periodic() {
         RobotStatus status = getDisabledStatus();
-        if (Robot.wasEnabled) {
+        if (Robot.isEnabled) {
             if (RobotController.isBrownedOut()) {
                 writeLedColor(LedColors.PoopBrown);
             } else if (!status.CANHealthy) {
@@ -74,14 +78,13 @@ public class Lights extends SubsystemBase {
             } else {
                 writeLedColor(LedColors.DarkBlue);
             }
-            if (Arm.getInstance().isArmStuck) {
+            if (Arm.getInstance().getIsArmStuck()) {
                 setCrossbarColor(LedColors.BadRed);
             }
         } else {
             writeDisabledStatus(status);
             disabledAnimations();
         }
-
         leds.setData(ledBuff);
     }
 
@@ -98,7 +101,7 @@ public class Lights extends SubsystemBase {
         public final boolean intakeHasCoral;
 
         public RobotStatus(boolean CANHealthy, boolean armCorrectOrientation, double batteryVoltage,
-                boolean camerasConnected, boolean brakeMode, boolean intakeHasCoral) {
+                           boolean camerasConnected, boolean brakeMode, boolean intakeHasCoral) {
             this.CANHealthy = CANHealthy;
             this.armCorrectOrientation = armCorrectOrientation;
             this.batteryVoltage = batteryVoltage;
@@ -128,49 +131,41 @@ public class Lights extends SubsystemBase {
     }
 
     private RobotStatus getDisabledStatus() {
-        // Simplified status check - using safe defaults for now
         return new RobotStatus(
-                true, // CAN healthy - simplified
-                Math.abs(0.5) == 0.5, // arm correct orientation - simplified
-                12.7, // battery voltage
-                true, // cameras connected - simplified
-                true, // brake mode - simplified
-                Intake.getInstance().hasCoral());
+                Arm.getInstance().isArmPivotMotorConnected() && Arm.getInstance().isRollerMotorConnected(),
+                Math.abs(Arm.getInstance().getCloseClampedPositionPublic()) == 0.5,
+                12.7,
+                Vision.getInstance().allConnected(),
+                !Robot.getInstance().isWasCoastModeEnabled(),
+                Intake.getInstance().hasCoral()
+        );
     }
 
     private Color boolColor(boolean b) {
         return b ? LedColors.DarkBlue.color : LedColors.BadRed.color;
     }
 
-    private void blinkGreen() {
-        blinkyPattern.applyTo(ledBuff);
-    }
-
-    private void setCrossbarColor(LedColors color) {
-        color.solidPattern.applyTo(crossSegment);
-    }
-
-    private void writeDisabledStatus(RobotStatus status) {
+    public void writeDisabledStatus(RobotStatus state) {
         blackPattern.applyTo(ledBuff);
         LedColors.DarkBlue.solidPattern.applyTo(crossSegment);
 
-        ledBuff.setLED(48, boolColor(status.camerasConnected));
-        ledBuff.setLED(47, boolColor(status.camerasConnected));
+        ledBuff.setLED(48, boolColor(state.camerasConnected));
+        ledBuff.setLED(47, boolColor(state.camerasConnected));
 
-        ledBuff.setLED(46, boolColor(status.CANHealthy));
-        ledBuff.setLED(45, boolColor(status.CANHealthy));
+        ledBuff.setLED(46, boolColor(state.CANHealthy));
+        ledBuff.setLED(45, boolColor(state.CANHealthy));
 
-        ledBuff.setLED(44, boolColor(status.armCorrectOrientation));
-        ledBuff.setLED(43, boolColor(status.armCorrectOrientation));
+        ledBuff.setLED(44, boolColor(state.armCorrectOrientation));
+        ledBuff.setLED(43, boolColor(state.armCorrectOrientation));
 
-        ledBuff.setLED(42, boolColor(status.brakeMode));
-        ledBuff.setLED(41, boolColor(status.brakeMode));
+        ledBuff.setLED(42, boolColor(state.brakeMode));
+        ledBuff.setLED(41, boolColor(state.brakeMode));
 
-        ledBuff.setLED(40, boolColor(!status.intakeHasCoral));
-        ledBuff.setLED(39, boolColor(!status.intakeHasCoral));
+        ledBuff.setLED(40, boolColor(!state.intakeHasCoral));
+        ledBuff.setLED(39, boolColor(!state.intakeHasCoral));
     }
 
-    private void disabledAnimations() {
+    public void disabledAnimations() {
         if (Robot.wasEnabledThenDisabled && lightsTimer.get() <= 5.0) {
             disabledRainbow.applyTo(rightSegment);
             disabledRainbow.applyTo(leftSegment);
@@ -178,20 +173,15 @@ public class Lights extends SubsystemBase {
         } else if (Robot.wasEnabledThenDisabled && lightsTimer.get() > 5.0) {
             Robot.wasEnabledThenDisabled = false;
             lightsTimer.restart();
-            // first two seconds after robot code boots up, complete a blue progressBar
         } else if (lightsTimer.get() <= 2.0) {
             progressBarAnimation += 0.02;
-
             if (progressBarAnimation >= 1.0) {
                 progressBarAnimation = 0.0;
             }
-
             LEDPattern progressBarPattern = LEDPattern.solid(LedColors.LightBlue.color)
                     .mask(LEDPattern.progressMaskLayer(() -> progressBarAnimation));
-
             progressBarPattern.applyTo(rightSegment);
             progressBarPattern.applyTo(leftSegment);
-            // then recursively, every 10 seconds run a light across the bar
         } else if (lightsTimer.get() % 10.0 <= 1.0) {
             nuclearRats(2.0, LedColors.TotalBlack, LedColors.LightBlue);
         }
@@ -202,17 +192,33 @@ public class Lights extends SubsystemBase {
                 LEDPattern.GradientType.kContinuous,
                 baseColor.color,
                 overlayColor.color);
-        LEDPattern overlayStepsFinal = overlayStepsPattern.scrollAtRelativeSpeed(Units.Hertz.of(frequency));
+        LEDPattern overlayStepsFinal = overlayStepsPattern.scrollAtRelativeSpeed(Frequency.ofBaseUnits(frequency, Units.Hertz));
 
         LEDPattern overlayCenterMask = LEDPattern.solid(baseColor.color);
         LEDPattern overlayCenterFlashed = overlayCenterMask.blink(
-                Units.Seconds.of(1.0 / frequency),
-                Units.Seconds.of(1.0 / frequency));
+                Time.ofBaseUnits(1.0 / frequency, Units.Seconds),
+                Time.ofBaseUnits(1.0 / frequency, Units.Seconds));
         LEDPattern overlayFinalPattern = overlayCenterMask.overlayOn(overlayCenterFlashed);
 
         overlayStepsFinal.applyTo(leftSegment);
         overlayStepsFinal.applyTo(rightSegment);
         if (baseColor != LedColors.TotalBlack)
             overlayFinalPattern.applyTo(crossSegment);
+    }
+
+    // Overload for default parameters (Kotlin default args)
+    public void nuclearRats() {
+        nuclearRats(4.0, LedColors.TotalBlack, LedColors.GoodGreen);
+    }
+    public void nuclearRats(double frequency, LedColors overlayColor) {
+        nuclearRats(frequency, LedColors.TotalBlack, overlayColor);
+    }
+
+    public void blinkGreen() {
+        blinkyPattern.applyTo(ledBuff);
+    }
+
+    public void setCrossbarColor(LedColors c) {
+        c.solidPattern.applyTo(crossSegment);
     }
 }

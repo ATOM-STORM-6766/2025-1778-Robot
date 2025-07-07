@@ -181,6 +181,19 @@ public class Arm extends SubsystemBase {
         return isArmStuck;
     }
 
+    // Getter for armPivotMotor connection
+    public boolean isArmPivotMotorConnected() {
+        return armPivotMotor.isConnected();
+    }
+    // Getter for rollerMotor connection
+    public boolean isRollerMotorConnected() {
+        return rollerMotor.isConnected();
+    }
+    // Public getter for closeClampedPosition
+    public double getCloseClampedPositionPublic() {
+        return getCloseClampedPosition();
+    }
+
     @Override
     public void periodic() {
         // Update object detection
