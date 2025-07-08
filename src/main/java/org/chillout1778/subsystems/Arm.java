@@ -153,10 +153,10 @@ public class Arm extends SubsystemBase {
   private Side getSideCloserToReef() {
     Rotation2d directionTowardReefCenter =
         Utils.mirrorIfRed(BLUE_REEF_CENTER)
-            .minus(Swerve.getInstance().getEstimatedPose().getTranslation())
+            .minus(SwerveNext.getInstance().getEstimatedPose().getTranslation())
             .getAngle();
     Rotation2d directionTowardRight =
-        Swerve.getInstance().getEstimatedPose().getRotation().rotateBy(Rotation2d.kCW_90deg);
+        SwerveNext.getInstance().getEstimatedPose().getRotation().rotateBy(Rotation2d.kCW_90deg);
 
     double ang = angleBetween(directionTowardReefCenter, directionTowardRight);
     assert (ang >= 0.0);
@@ -176,7 +176,7 @@ public class Arm extends SubsystemBase {
 
   private Side getSideCloserToBarge() {
     boolean isOnBlue = !Robot.getInstance().isOnRedSide();
-    double rotation = Swerve.getInstance().getEstimatedPose().getRotation().getRadians();
+    double rotation = SwerveNext.getInstance().getEstimatedPose().getRotation().getRadians();
 
     if ((rotation < Math.PI && rotation > Math.PI - deadzoneAngle)
         || (rotation > -Math.PI && rotation < -Math.PI + deadzoneAngle)
@@ -191,7 +191,7 @@ public class Arm extends SubsystemBase {
 
   private Side getSideCloserToProcessor() {
     boolean isOnBlue = !Robot.getInstance().isOnRedSide();
-    double rotation = Swerve.getInstance().getEstimatedPose().getRotation().getRadians();
+    double rotation = SwerveNext.getInstance().getEstimatedPose().getRotation().getRadians();
 
     if ((rotation < (Math.PI / 2 + deadzoneAngle) && rotation > (Math.PI / 2 - deadzoneAngle))
         || (rotation > (-Math.PI / 2 - deadzoneAngle)
@@ -206,7 +206,7 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean atSafeReefDistance() {
-    return Swerve.getInstance()
+    return SwerveNext.getInstance()
             .getEstimatedPose()
             .getTranslation()
             .getDistance(Utils.mirrorIfRed(BLUE_REEF_CENTER))
@@ -214,7 +214,7 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean atSafePlacementDistance() {
-    return Swerve.getInstance()
+    return SwerveNext.getInstance()
             .getEstimatedPose()
             .getTranslation()
             .getDistance(Utils.mirrorIfRed(BLUE_REEF_CENTER))
@@ -222,15 +222,15 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean atSafeBargeDistance() {
-    return Swerve.getInstance().getEstimatedPose().getX()
+    return SwerveNext.getInstance().getEstimatedPose().getX()
             < Constants.Field.FIELD_X_SIZE / 2 - Constants.Arm.SAFE_BARGE_DISTANCE
-        || Swerve.getInstance().getEstimatedPose().getX()
+        || SwerveNext.getInstance().getEstimatedPose().getX()
             > Constants.Field.FIELD_X_SIZE / 2 + Constants.Arm.SAFE_BARGE_DISTANCE;
   }
 
   public boolean atSafeProcessorDistance() {
-    return Swerve.getInstance().getEstimatedPose().getY() > Constants.Field.SAFE_WALL_DISTANCE
-        && Swerve.getInstance().getEstimatedPose().getY()
+    return SwerveNext.getInstance().getEstimatedPose().getY() > Constants.Field.SAFE_WALL_DISTANCE
+        && SwerveNext.getInstance().getEstimatedPose().getY()
             < (Constants.Field.FIELD_Y_SIZE - Constants.Field.SAFE_WALL_DISTANCE);
   }
 

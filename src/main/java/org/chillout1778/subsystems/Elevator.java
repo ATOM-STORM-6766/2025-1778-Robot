@@ -193,8 +193,8 @@ public class Elevator extends SubsystemBase {
 
   public Translation2d getEndOfManipulatorPose() {
     return new Translation2d(Constants.Arm.CORAL_CENTER_OFFSET, 0.0)
-        .rotateBy(Swerve.getInstance().getEstimatedPose().getRotation())
-        .plus(Swerve.getInstance().getEstimatedPose().getTranslation());
+        .rotateBy(SwerveNext.getInstance().getEstimatedPose().getRotation())
+        .plus(SwerveNext.getInstance().getEstimatedPose().getTranslation());
   }
 
   public AlgaeHeight getPreferredAlgaeHeight() {

@@ -583,7 +583,7 @@ public class Superstructure extends SubsystemBase {
             start,
             place,
             () -> {
-              Swerve.getInstance().markPoseScored();
+              // Swerve.getInstance().markPoseScored();
               return Elevator.getInstance().isAtSetpoint()
                   && Arm.getInstance().isAtSetpoint()
                   && inputs.wantScore;

@@ -13,9 +13,11 @@ import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
 import java.util.Arrays;
 import org.chillout1778.commands.AutoRunnerCommand;
-import org.chillout1778.commands.TeleopDriveCommand;
+import org.chillout1778.commands.TeleopDriveNextCommand;
 import org.chillout1778.commands.TeleopSuperstructureCommand;
 import org.chillout1778.subsystems.*;
 
@@ -36,7 +38,8 @@ public class Robot extends TimedRobot {
   }
 
   public boolean isOnRedSide() {
-    return Swerve.getInstance().getEstimatedPose().getX() > (Constants.Field.FIELD_X_SIZE / 2);
+    // return Swerve.getInstance().getEstimatedPose().getX() > (Constants.Field.FIELD_X_SIZE / 2);
+    return false;
   }
 
   private final DigitalInput enableCoastModeSwitch =
@@ -44,6 +47,9 @@ public class Robot extends TimedRobot {
 
   public boolean wasEnabledThenDisabled = false;
   public boolean wasEnabled = false;
+
+  private final Telemetry logger = new Telemetry();
+
 
   private final SendableChooser<Trajectory<SwerveSample>> autoChooser = new SendableChooser<>();
 
@@ -64,7 +70,8 @@ public class Robot extends TimedRobot {
     Elevator.getInstance();
     Intake.getInstance();
     Superstructure.getInstance();
-    Swerve.getInstance();
+    // Swerve.getInstance();
+    SwerveNext.getInstance().registerTelemetry(logger::telemeterize);;
     Vision.getInstance();
     Lights.getInstance();
 
@@ -154,8 +161,8 @@ public class Robot extends TimedRobot {
         Superstructure.getInstance()
             .makeZeroAllSubsystemsCommand()
             .andThen( // EXTREMELY IMPORTANT TO ZERO
-                new AutoRunnerCommand(autoTrajectory))
-            .andThen(new TeleopDriveCommand(() -> Controls.emptyInputs));
+                new AutoRunnerCommand(autoTrajectory));
+            // .andThen(new TeleopDriveCommand(() -> Controls.emptyInputs));
   }
 
   @Override
@@ -175,16 +182,18 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     if (!didAutoRun) {
-      Swerve.getInstance().setGyroAngle(isRedAlliance() ? Math.PI : 0.0);
+      // Swerve.getInstance().setGyroAngle(isRedAlliance() ? Math.PI : 0.0);
     }
     Superstructure.getInstance().makeZeroAllSubsystemsCommand().schedule();
-    Swerve.getInstance().setDefaultCommand(new TeleopDriveCommand(Controls::driverInputs));
+    // Swerve.getInstance().setDefaultCommand(new TeleopDriveCommand(Controls::driverInputs));
+    SwerveNext.getInstance().setDefaultCommand(new TeleopDriveNextCommand(SwerveNext.getInstance(), new CommandXboxController(0)));
+
     Superstructure.getInstance().setDefaultCommand(new TeleopSuperstructureCommand());
   }
 
   @Override
   public void teleopExit() {
-    Swerve.getInstance().removeDefaultCommand();
+    // Swerve.getInstance().removeDefaultCommand();
     Superstructure.getInstance().removeDefaultCommand();
   }
 
@@ -192,6 +201,6 @@ public class Robot extends TimedRobot {
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
     Superstructure.getInstance().makeZeroAllSubsystemsCommand().schedule();
-    Swerve.getInstance().setGyroAngle(0.0);
+    // Swerve.getInstance().setGyroAngle(0.0);
   }
 }

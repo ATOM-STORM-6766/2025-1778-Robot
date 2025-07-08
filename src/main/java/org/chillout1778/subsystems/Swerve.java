@@ -31,10 +31,11 @@ public class Swerve extends SubsystemBase {
   private static Swerve instance;
 
   public static Swerve getInstance() {
-    if (instance == null) {
-      instance = new Swerve();
-    }
-    return instance;
+    // if (instance == null) {
+    //   instance = new Swerve();
+    // }
+    // return instance;
+    return null;
   }
 
   private final Pigeon2 gyro;

@@ -6,7 +6,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.chillout1778.subsystems.Superstructure;
-import org.chillout1778.subsystems.Swerve;
+import org.chillout1778.subsystems.SwerveNext;
 
 public class AutoRunnerCommand extends Command {
   private final Trajectory<SwerveSample> trajectory;
@@ -14,7 +14,7 @@ public class AutoRunnerCommand extends Command {
 
   public AutoRunnerCommand(Trajectory<SwerveSample> trajectory) {
     this.trajectory = trajectory;
-    addRequirements(Superstructure.getInstance(), Swerve.getInstance());
+    addRequirements(Superstructure.getInstance(), SwerveNext.getInstance());
   }
 
   @Override
@@ -33,7 +33,7 @@ public class AutoRunnerCommand extends Command {
     if (sampleOpt.isPresent()) {
       SwerveSample sample = sampleOpt.get();
       // Follow the trajectory sample
-      Swerve.getInstance().followSample(sample);
+      // Swerve.getInstance().followSample(sample);
 
       // Process trajectory events
       processTrajectoryEvents(currentTime);
@@ -47,7 +47,7 @@ public class AutoRunnerCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    Swerve.getInstance().stop();
+    // Swerve.getInstance().stop();
     timer.stop();
   }
 
