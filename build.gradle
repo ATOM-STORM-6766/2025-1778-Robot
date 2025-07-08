@@ -3,6 +3,7 @@ plugins {
     // id "org.jetbrains.kotlin.jvm" version "1.9.23"
     id "edu.wpi.first.GradleRIO" version "2025.3.2"
     id "idea"
+    id 'com.diffplug.spotless' version '6.25.0'
 }
 
 def javaVersion = JavaVersion.VERSION_17
@@ -137,5 +138,11 @@ idea {
         downloadSources = true
         // Exclude the .vscode directory from indexing and search
         excludeDirs+=file(".vscode" )
+    }
+}
+
+spotless {
+    java {
+        googleJavaFormat()
     }
 }
