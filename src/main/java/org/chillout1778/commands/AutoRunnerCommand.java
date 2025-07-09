@@ -33,7 +33,7 @@ public class AutoRunnerCommand extends Command {
     if (sampleOpt.isPresent()) {
       SwerveSample sample = sampleOpt.get();
       // Follow the trajectory sample
-      // Swerve.getInstance().followSample(sample);
+      SwerveNext.getInstance().followSample(sample);
 
       // Process trajectory events
       processTrajectoryEvents(currentTime);
@@ -47,7 +47,7 @@ public class AutoRunnerCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    // Swerve.getInstance().stop();
+    SwerveNext.getInstance().stop();
     timer.stop();
   }
 

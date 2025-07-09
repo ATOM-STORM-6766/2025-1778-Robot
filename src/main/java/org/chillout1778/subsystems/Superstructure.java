@@ -476,7 +476,7 @@ public class Superstructure extends SubsystemBase {
         new Transition(
             State.PreBarge,
             State.ScoreBarge,
-            () -> inputs.wantScore && Swerve.getInstance().atGoodScoringDistance()));
+            () -> inputs.wantScore && SwerveNext.getInstance().atGoodScoringDistance()));
     transitions.add(
         new Transition(
             State.ScoreBarge,
@@ -583,7 +583,7 @@ public class Superstructure extends SubsystemBase {
             start,
             place,
             () -> {
-              // Swerve.getInstance().markPoseScored();
+              SwerveNext.getInstance().markPoseScored();
               return Elevator.getInstance().isAtSetpoint()
                   && Arm.getInstance().isAtSetpoint()
                   && inputs.wantScore;

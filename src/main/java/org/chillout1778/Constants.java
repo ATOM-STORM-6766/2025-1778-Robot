@@ -379,7 +379,7 @@ public class Constants {
     private static final boolean kInvertLeftSide = true;
     private static final boolean kInvertRightSide = true;
 
-    private static final int kPigeonId = 10;
+    private static final int kPigeonId = 30;
 
     // 这些仅用于仿真
     private static final MomentOfInertia kSteerInertia = KilogramSquareMeters.of(0.01);

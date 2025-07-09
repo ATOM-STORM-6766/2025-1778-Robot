@@ -65,7 +65,9 @@ public class Controls {
     }
   }
 
-  public static final DriveInputs emptyInputs = new DriveInputs(0.0, 0.0, 0.0, 0.0, AlignMode.None);
+  public static DriveInputs emptyInputs() {
+    return new DriveInputs(0.0, 0.0, 0.0, 0.0, AlignMode.None);
+  }
 
   public static DriveInputs driverInputs() {
     return new DriveInputs(
