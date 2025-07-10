@@ -69,8 +69,7 @@ public class Lights extends SubsystemBase {
         writeLedColor(LedColors.BadRed);
       } else if (SwerveNext.getInstance().getIsAligned()) {
         blinkGreen();
-      } 
-      else if (Arm.getInstance().getHasObject()) {
+      } else if (Arm.getInstance().getHasObject()) {
         writeLedColor(LedColors.PureWhite);
       } else if (Intake.getInstance().hasCoral()) {
         writeLedColor(LedColors.LightBlue);

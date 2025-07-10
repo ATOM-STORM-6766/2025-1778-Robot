@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-
 import java.util.Arrays;
 import org.chillout1778.commands.AutoRunnerCommand;
 import org.chillout1778.commands.TeleopDriveNextCommand;
@@ -48,7 +47,6 @@ public class Robot extends TimedRobot {
 
   private final Telemetry logger = new Telemetry();
 
-
   private final SendableChooser<Trajectory<SwerveSample>> autoChooser = new SendableChooser<>();
 
   private Robot() {
@@ -68,7 +66,8 @@ public class Robot extends TimedRobot {
     Elevator.getInstance();
     Intake.getInstance();
     Superstructure.getInstance();
-    SwerveNext.getInstance().registerTelemetry(logger::telemeterize);;
+    SwerveNext.getInstance().registerTelemetry(logger::telemeterize);
+    ;
     Vision.getInstance();
     Lights.getInstance();
 

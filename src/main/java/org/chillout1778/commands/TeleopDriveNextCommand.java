@@ -19,9 +19,9 @@ public class TeleopDriveNextCommand extends Command {
   private Controls.AlignMode previousAlignMode = Controls.AlignMode.None;
 
   // PID controllers for alignment
-  private final PIDController xPID = Constants.Swerve.makeAlignDrivePID();
-  private final PIDController yPID = Constants.Swerve.makeAlignDrivePID();
-  private final PIDController turnPID = Constants.Swerve.makeAlignTurnPID();
+  private final PIDController xPID = Constants.SwerveDriveKinematics.makeAlignDrivePID();
+  private final PIDController yPID = Constants.SwerveDriveKinematics.makeAlignDrivePID();
+  private final PIDController turnPID = Constants.SwerveDriveKinematics.makeAlignTurnPID();
 
   public TeleopDriveNextCommand(Supplier<Controls.DriveInputs> driveInputsSupplier) {
     this.driveInputsSupplier = driveInputsSupplier;
@@ -68,9 +68,7 @@ public class TeleopDriveNextCommand extends Command {
               fixRotationInput(
                   turnPID.calculate(
                       swerve.getEstimatedPose().getRotation().getRadians(),
-                      Math.abs(
-                                  Math.PI / 2
-                                      - swerve.getEstimatedPose().getRotation().getRadians())
+                      Math.abs(Math.PI / 2 - swerve.getEstimatedPose().getRotation().getRadians())
                               < Math.abs(
                                   -Math.PI / 2
                                       - swerve.getEstimatedPose().getRotation().getRadians())
@@ -102,10 +100,8 @@ public class TeleopDriveNextCommand extends Command {
         swerve.setIsAligned(swerve.getWithinTolerance(pose.getTranslation()));
         speeds =
             new ChassisSpeeds(
-                fixTranslationInput(
-                    xPID.calculate(swerve.getEstimatedPose().getX(), pose.getX())),
-                fixTranslationInput(
-                    yPID.calculate(swerve.getEstimatedPose().getY(), pose.getY())),
+                fixTranslationInput(xPID.calculate(swerve.getEstimatedPose().getX(), pose.getX())),
+                fixTranslationInput(yPID.calculate(swerve.getEstimatedPose().getY(), pose.getY())),
                 fixRotationInput(
                     turnPID.calculate(
                         swerve.getEstimatedPose().getRotation().getRadians(),
@@ -123,24 +119,24 @@ public class TeleopDriveNextCommand extends Command {
   private double fixRotationInput(double n) {
     return Utils.unclampedDeadzone(
         Math.max(
-            -Constants.Swerve.maxAlignRotationSpeed,
-            Math.min(Constants.Swerve.maxAlignRotationSpeed, n)),
+            -Constants.SwerveDriveKinematics.maxAlignRotationSpeed,
+            Math.min(Constants.SwerveDriveKinematics.maxAlignRotationSpeed, n)),
         0.03);
   }
 
   private double fixTranslationInput(double n) {
     return Utils.unclampedDeadzone(
         Math.max(
-            -Constants.Swerve.maxAlignTranslationSpeed,
-            Math.min(Constants.Swerve.maxAlignTranslationSpeed, n)),
+            -Constants.SwerveDriveKinematics.maxAlignTranslationSpeed,
+            Math.min(Constants.SwerveDriveKinematics.maxAlignTranslationSpeed, n)),
         0.03);
   }
 
   private double fixBargeTranslationInput(double n) {
     return Utils.unclampedDeadzone(
         Math.max(
-            -Constants.Swerve.maxBargeAlignTranslationSpeed,
-            Math.min(Constants.Swerve.maxBargeAlignTranslationSpeed, n)),
+            -Constants.SwerveDriveKinematics.maxBargeAlignTranslationSpeed,
+            Math.min(Constants.SwerveDriveKinematics.maxBargeAlignTranslationSpeed, n)),
         0.03);
   }
 
@@ -156,9 +152,9 @@ public class TeleopDriveNextCommand extends Command {
     r = r * r;
     rotation = rotation * rotation * Math.signum(rotation);
 
-    double actualX = r * Math.cos(theta) * Constants.Swerve.MAX_VELOCITY;
-    double actualY = r * Math.sin(theta) * Constants.Swerve.MAX_VELOCITY;
-    double actualRotation = rotation * Constants.Swerve.MAX_ANGULAR_VELOCITY;
+    double actualX = r * Math.cos(theta) * Constants.SwerveDriveKinematics.MAX_VELOCITY;
+    double actualY = r * Math.sin(theta) * Constants.SwerveDriveKinematics.MAX_VELOCITY;
+    double actualRotation = rotation * Constants.SwerveDriveKinematics.MAX_ANGULAR_VELOCITY;
 
     return new ChassisSpeeds(actualX, actualY, actualRotation);
   }

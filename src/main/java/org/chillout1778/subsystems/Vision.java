@@ -1,7 +1,6 @@
 package org.chillout1778.subsystems;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -72,7 +71,7 @@ public class Vision extends SubsystemBase {
         .anyMatch(targetIds::contains);
   }
 
-  public void periodicAddMeasurements(SwerveDrivePoseEstimator estimator) {
+  public void periodicAddMeasurements(SwerveNext swerve) {
     for (Camera camera : cameras) {
       if (camera.isConnected()) {
         camera.getAllUnreadResults().stream()
@@ -90,7 +89,7 @@ public class Vision extends SubsystemBase {
                                 && pose.targetsUsed.get(0).getArea() > 0.25)))
             .forEach(
                 pose ->
-                    estimator.addVisionMeasurement(
+                    swerve.addVisionMeasurement(
                         pose.estimatedPose.toPose2d(), pose.timestampSeconds));
       }
     }

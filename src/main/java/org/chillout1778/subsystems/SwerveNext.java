@@ -2,6 +2,7 @@ package org.chillout1778.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
+import choreo.trajectory.SwerveSample;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -13,8 +14,6 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
-import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -34,11 +33,7 @@ import java.util.stream.IntStream;
 import org.chillout1778.Constants;
 import org.chillout1778.Robot;
 
-/**
- * 扩展 Phoenix 6 SwerveDrivetrain 类并实现 Subsystem 接口的类，
- * 使其可以在基于命令的项目中轻松使用。
- * 集成了原 Swerve.java 的业务逻辑。
- */
+/** 扩展 Phoenix 6 SwerveDrivetrain 类并实现 Subsystem 接口的类， 使其可以在基于命令的项目中轻松使用。 集成了原 Swerve.java 的业务逻辑。 */
 public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> implements Subsystem {
   private static SwerveNext instance;
 
@@ -85,15 +80,22 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
   private final SysIdRoutine m_sysIdRoutineTranslation =
       new SysIdRoutine(
           new SysIdRoutine.Config(
-              null, Volts.of(4), null, state -> SignalLogger.writeString("SysIdTranslation_State", state.toString())),
+              null,
+              Volts.of(4),
+              null,
+              state -> SignalLogger.writeString("SysIdTranslation_State", state.toString())),
           new SysIdRoutine.Mechanism(
               output -> setControl(m_translationCharacterization.withVolts(output)), null, this));
 
   private final SysIdRoutine m_sysIdRoutineSteer =
       new SysIdRoutine(
           new SysIdRoutine.Config(
-              null, Volts.of(7), null, state -> SignalLogger.writeString("SysIdSteer_State", state.toString())),
-          new SysIdRoutine.Mechanism(volts -> setControl(m_steerCharacterization.withVolts(volts)), null, this));
+              null,
+              Volts.of(7),
+              null,
+              state -> SignalLogger.writeString("SysIdSteer_State", state.toString())),
+          new SysIdRoutine.Mechanism(
+              volts -> setControl(m_steerCharacterization.withVolts(volts)), null, this));
 
   private final SysIdRoutine m_sysIdRoutineRotation =
       new SysIdRoutine(
@@ -137,16 +139,12 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
     }
   }
 
-  // ==================================================================================
-  // Methods migrated from Swerve.java
-  // ==================================================================================
-
   public Pose2d getEstimatedPose() {
     return this.getState().Pose;
   }
 
   public void setEstimatedPose(Pose2d pose) {
-    // this.resetPose(pose);
+    this.resetPose(pose);
   }
 
   public void stop() {
@@ -193,15 +191,15 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
 
   public boolean getWithinTolerance(Translation2d t) {
     return getEstimatedPose().getTranslation().getDistance(t)
-        < Constants.Swerve.ALIGNMENT_TOLERANCE;
+        < Constants.SwerveDriveKinematics.ALIGNMENT_TOLERANCE;
   }
 
   public double score(Pose2d p) {
     double translation = p.getTranslation().getDistance(getEstimatedPose().getTranslation());
     double rotation =
         Math.abs(p.getRotation().minus(getEstimatedPose().getRotation()).getRadians());
-    return Constants.Swerve.ALIGN_TRANSLATION_WEIGHT * translation
-        + Constants.Swerve.ALIGN_ANGLE_WEIGHT * rotation;
+    return Constants.SwerveDriveKinematics.ALIGN_TRANSLATION_WEIGHT * translation
+        + Constants.SwerveDriveKinematics.ALIGN_ANGLE_WEIGHT * rotation;
   }
 
   public void markPoseScored() {
@@ -253,13 +251,13 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                         .getPose()
                         .getTranslation()
                         .getDistance(getEstimatedPose().getTranslation())
-                    < Constants.Swerve.MAX_NODE_DISTANCE)
+                    < Constants.SwerveDriveKinematics.MAX_NODE_DISTANCE)
         .min(
             Comparator.comparingDouble(
                 indexedPose -> {
                   double fudge =
                       wasPoseScored(indexedPose.getIndex())
-                          ? Constants.Swerve.ALREADY_SCORED_BADNESS
+                          ? Constants.SwerveDriveKinematics.ALREADY_SCORED_BADNESS
                           : 0.0;
                   return fudge + score(indexedPose.getPose());
                 }));
@@ -274,7 +272,7 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
         .filter(
             p ->
                 p.getTranslation().getDistance(getEstimatedPose().getTranslation())
-                    < Constants.Swerve.MAX_NODE_DISTANCE)
+                    < Constants.SwerveDriveKinematics.MAX_NODE_DISTANCE)
         .min(Comparator.comparingDouble(this::score));
   }
 
@@ -287,7 +285,7 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
         .filter(
             p ->
                 p.getTranslation().getDistance(getEstimatedPose().getTranslation())
-                    < Constants.Swerve.MAX_NODE_DISTANCE)
+                    < Constants.SwerveDriveKinematics.MAX_NODE_DISTANCE)
         .min(Comparator.comparingDouble(this::score));
   }
 
@@ -314,9 +312,7 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
       m_hasAppliedOperatorPerspective = true;
     }
 
-    // Vision integration - assuming Vision subsystem provides pose updates
-    // Vision.getInstance().getLatestVisionPose().ifPresent(update ->
-    //     this.addVisionMeasurement(update.getPose(), update.getTimestamp()));
+    Vision.getInstance().periodicAddMeasurements(this);
   }
 
   @Override
