@@ -29,6 +29,7 @@ public class Vision extends SubsystemBase {
 
     public Camera(String initialName, Transform3d robotToCamera) {
       super(initialName);
+
       this.poseEstimator =
           new PhotonPoseEstimator(
               AprilTagFieldLayout.loadField(Constants.Vision.FIELD_TYPE),
@@ -44,8 +45,12 @@ public class Vision extends SubsystemBase {
   }
 
   private final Camera[] cameras;
+  private final Thread visionThread;
+  private final SwerveNext swerve;
 
   private Vision() {
+    swerve = SwerveNext.getInstance();
+
     cameras =
         new Camera[] {
           new Camera(Constants.Vision.FRONT_RIGHT_NAME, Constants.Vision.FRONT_RIGHT_TRANSFORM),
@@ -53,15 +58,42 @@ public class Vision extends SubsystemBase {
           new Camera(Constants.Vision.BACK_RIGHT_NAME, Constants.Vision.BACK_RIGHT_TRANSFORM),
           new Camera(Constants.Vision.BACK_LEFT_NAME, Constants.Vision.BACK_LEFT_TRANSFORM)
         };
+
+    visionThread = new Thread(this::updateVision);
+    visionThread.setDaemon(true);
+    visionThread.start();
   }
 
-  public boolean allConnected() {
-    for (Camera camera : cameras) {
-      if (!camera.isConnected()) {
-        return false;
+  private void updateVision() {
+    while (!Thread.currentThread().isInterrupted()) {
+      for (Camera camera : cameras) {
+        if (camera.isConnected()) {
+          camera.getAllUnreadResults().stream()
+              .filter(result -> !removeResult(result))
+              .map(result -> camera.getPoseEstimator().update(result))
+              .filter(Optional::isPresent)
+              .map(Optional::get)
+              .filter(
+                  pose ->
+                      Utils.isInsideField(pose.estimatedPose.getTranslation().toTranslation2d())
+                          && (pose.strategy
+                                  == PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
+                              || (pose.strategy == PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY
+                                  && pose.targetsUsed.get(0).getPoseAmbiguity() < 0.05
+                                  && pose.targetsUsed.get(0).getArea() > 0.25)))
+              .forEach(
+                  pose ->
+                      swerve.addVisionMeasurement(
+                          pose.estimatedPose.toPose2d(), pose.timestampSeconds));
+        }
+
+        try {
+          Thread.sleep(20); // 50Hz
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        }
       }
     }
-    return true;
   }
 
   public boolean removeResult(PhotonPipelineResult res) {
@@ -71,34 +103,13 @@ public class Vision extends SubsystemBase {
         .anyMatch(targetIds::contains);
   }
 
-  public void periodicAddMeasurements(SwerveNext swerve) {
+  public boolean allConnected() {
     for (Camera camera : cameras) {
-      if (camera.isConnected()) {
-        camera.getAllUnreadResults().stream()
-            .filter(result -> !removeResult(result))
-            .map(result -> camera.getPoseEstimator().update(result))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .filter(
-                pose ->
-                    Utils.isInsideField(pose.estimatedPose.getTranslation().toTranslation2d())
-                        && (pose.strategy
-                                == PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
-                            || (pose.strategy == PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY
-                                && pose.targetsUsed.get(0).getPoseAmbiguity() < 0.05
-                                && pose.targetsUsed.get(0).getArea() > 0.25)))
-            .forEach(
-                pose ->
-                    swerve.addVisionMeasurement(
-                        pose.estimatedPose.toPose2d(), pose.timestampSeconds));
+      if (!camera.isConnected()) {
+        return false;
       }
     }
-  }
-
-  @Override
-  public void periodic() {
-    // Vision measurements are handled in periodicAddMeasurements
-    // This method can be used for logging or other periodic tasks
+    return true;
   }
 
   @Override

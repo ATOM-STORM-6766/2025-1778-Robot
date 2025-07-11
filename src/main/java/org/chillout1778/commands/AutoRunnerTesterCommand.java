@@ -31,7 +31,8 @@ public class AutoRunnerTesterCommand extends Command {
       System.out.println("[AutoRunnerTesterCommand] Setting initial pose to: " + initialPose);
       SwerveNext.getInstance().setEstimatedPose(initialPose);
     } else {
-      System.out.println("[AutoRunnerTesterCommand] Robot pose is already within tolerance. Not resetting.");
+      System.out.println(
+          "[AutoRunnerTesterCommand] Robot pose is already within tolerance. Not resetting.");
     }
   }
 

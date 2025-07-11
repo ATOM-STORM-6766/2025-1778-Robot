@@ -311,8 +311,6 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
               : kBlueAlliancePerspectiveRotation);
       m_hasAppliedOperatorPerspective = true;
     }
-
-    Vision.getInstance().periodicAddMeasurements(this);
   }
 
   @Override
