@@ -169,8 +169,8 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 currentPose.getRotation().getRadians(), goalPose.getRotation().getRadians()));
     this.setControl(
         new SwerveRequest.FieldCentric()
-            .withVelocityX(-speeds.vxMetersPerSecond)
-            .withVelocityY(-speeds.vyMetersPerSecond)
+            .withVelocityX(speeds.vxMetersPerSecond)
+            .withVelocityY(speeds.vyMetersPerSecond)
             .withRotationalRate(speeds.omegaRadiansPerSecond));
   }
 
@@ -184,8 +184,8 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
                 + headingController.calculate(pose.getRotation().getRadians(), sample.heading));
     this.setControl(
         new SwerveRequest.FieldCentric()
-            .withVelocityX(-speeds.vxMetersPerSecond)
-            .withVelocityY(-speeds.vyMetersPerSecond)
+            .withVelocityX(speeds.vxMetersPerSecond)
+            .withVelocityY(speeds.vyMetersPerSecond)
             .withRotationalRate(speeds.omegaRadiansPerSecond));
   }
 
