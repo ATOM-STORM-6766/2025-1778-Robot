@@ -487,6 +487,7 @@ public class Arm extends SubsystemBase {
         null);
     builder.addBooleanProperty("At setpoint?", this::isAtSetpoint, null);
     builder.addDoubleProperty("roller current", () -> statorCurrentSignal.getValueAsDouble(), null);
+    builder.addBooleanProperty("Is Zeroed?", () -> isZeroed, null);
     Utils.addClosedLoopProperties("Arm pivot", armPivotMotor, builder);
   }
 }

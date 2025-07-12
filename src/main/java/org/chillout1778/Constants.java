@@ -51,9 +51,12 @@ public class Constants {
   }
 
   public static class DioIds {
-    public static final int ARM_ABSOLUTE_ENCODER = 0;
-    public static final int INTAKE_LINEBREAK = 1;
-    public static final int DISABLE_BREAK_MODE = 2;
+    public static final int ADDRESSABLE_LED = 0;
+    public static final int ARM_ABSOLUTE_ENCODER = 1;
+    public static final int INTAKE_LINEBREAK = 2;
+    public static final int INTAKE_LINEBREAK_FOLLOW = 3;
+    public static final int DISABLE_BREAK_MODE = 4
+    ;
   }
 
   public static class Vision {
@@ -239,8 +242,8 @@ public class Constants {
   public static class Elevator {
     public static final double SPOOL_RADIUS = Units.inchesToMeters(0.75);
     public static final double GEAR_RATIO = 4.0;
-    public static final double ZERO_VOLTAGE = -0.2;
-    public static final double ZERO_MIN_CURRENT = 1.7; // amps
+    public static final double ZERO_VOLTAGE = -0.05;
+    public static final double ZERO_MIN_CURRENT = 0.1; // amps
     public static final double SETPOINT_THRESHOLD = 0.01;
     public static final double LAZIER_SETPOINT_THRESHOLD = 0.03;
     public static final double COLLISION_AVOIDANCE_MARGIN = 1.0;
@@ -250,7 +253,7 @@ public class Constants {
     public static TalonFXConfiguration getMotorConfig() {
       TalonFXConfiguration config = new TalonFXConfiguration();
       config.Feedback.SensorToMechanismRatio = GEAR_RATIO / (SPOOL_RADIUS * 2 * Math.PI);
-      config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+      config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
       config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
       config.Slot0.kS = 0.0;
       config.Slot0.kV = 0.0;
@@ -268,9 +271,9 @@ public class Constants {
     public static final double ALLOWED_OPERATING_RANGE_MIN = Math.toRadians(-350.0);
     public static final double ALLOWED_OPERATING_RANGE_MAX = Math.toRadians(350.0);
     public static final double PIVOT_ENCODER_RATIO =
-        (36.0 / 16.0) * (36.0 / 16.0) * (60.0 / 24.0) * (12.0 / 54.0);
+        (36.0 / 16.0) * (36.0 / 16.0) * (60.0 / 20.0) * (12.0 / 54.0);
     public static final double PIVOT_GEAR_RATIO = (12.0 / 60.0) * (20.0 / 60.0) * (12.0 / 54.0);
-    public static final double PIVOT_ABS_ENCODER_OFFSET_ENCODER_ROTATIONS = 0.7209;
+    public static final double PIVOT_ABS_ENCODER_OFFSET_ENCODER_ROTATIONS = 0.421;
     public static final double CORAL_CENTER_OFFSET = Units.inchesToMeters(9.5);
     public static final double SAFE_DISTANCE_FROM_REEF_CENTER = Units.inchesToMeters(70.0);
     public static final double SAFE_PLACEMENT_DISTANCE = Units.inchesToMeters(60.0);

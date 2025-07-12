@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.chillout1778.Robot;
+import org.chillout1778.Constants.DioIds;
 
 public class Lights extends SubsystemBase {
   private static Lights instance;
@@ -42,7 +43,7 @@ public class Lights extends SubsystemBase {
       LEDPattern.solid(LedColors.GoodGreen.color).blink(Units.Seconds.of(0.15));
 
   private Lights() {
-    leds = new AddressableLED(3);
+    leds = new AddressableLED(DioIds.ADDRESSABLE_LED);
     leds.setColorOrder(AddressableLED.ColorOrder.kRGB);
     ledBuff = new AddressableLEDBuffer(LENGTH);
 

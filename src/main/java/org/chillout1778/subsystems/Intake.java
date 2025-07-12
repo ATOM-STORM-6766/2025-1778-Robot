@@ -61,6 +61,7 @@ public class Intake extends SubsystemBase {
   private final TalonFX rollerMotor;
   private final TalonFX centeringMotor;
   private final DigitalInput linebreak;
+  private final DigitalInput linebreakFoller;
 
   private boolean isZeroed = false;
 
@@ -79,6 +80,7 @@ public class Intake extends SubsystemBase {
         .apply(new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive));
 
     linebreak = new DigitalInput(Constants.DioIds.INTAKE_LINEBREAK);
+    linebreakFoller = new DigitalInput(Constants.DioIds.INTAKE_LINEBREAK_FOLLOW);
   }
 
   public boolean getIsZeroed() {
@@ -129,7 +131,7 @@ public class Intake extends SubsystemBase {
 
   // Kotlin: val hasCoral get() = !linebreak.get() || Controls.operatorController.hid.touchpadButton
   public boolean hasCoral() {
-    return !linebreak.get() || Controls.operatorController.getHID().getTouchpadButton();
+    return !(linebreak.get() && linebreakFoller.get()) || Controls.operatorController.getHID().getTouchpadButton();
   }
 
   // Kotlin: val atSetpoint get() = Math.abs(angle - effectivePivotState.angleSetpoint) <

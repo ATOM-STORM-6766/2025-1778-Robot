@@ -17,6 +17,7 @@ import java.util.Arrays;
 import org.chillout1778.commands.AutoRunnerCommand;
 import org.chillout1778.commands.TeleopDriveNextCommand;
 import org.chillout1778.commands.TeleopSuperstructureCommand;
+import org.chillout1778.commands.TeleopTesterCommand;
 import org.chillout1778.subsystems.*;
 
 public class Robot extends TimedRobot {
@@ -126,7 +127,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    boolean pressed = !enableCoastModeSwitch.get();
+    // boolean pressed = !enableCoastModeSwitch.get();
+    boolean pressed = true;
     if (!wasCoastModeEnabled && pressed) { // rising edge
       Elevator.getInstance().setCoastEnabled(true);
       Arm.getInstance().setCoastEnabled(true);
@@ -183,11 +185,13 @@ public class Robot extends TimedRobot {
     Superstructure.getInstance().makeZeroAllSubsystemsCommand().schedule();
     SwerveNext.getInstance().setDefaultCommand(new TeleopDriveNextCommand(Controls::driverInputs));
     Superstructure.getInstance().setDefaultCommand(new TeleopSuperstructureCommand());
+    // new ZeroArmCommand().andThen(new TeleopTesterCommand()).schedule();
   }
 
   @Override
   public void teleopExit() {
     Superstructure.getInstance().removeDefaultCommand();
+    // new TeleopTesterCommand().cancel();
   }
 
   @Override
