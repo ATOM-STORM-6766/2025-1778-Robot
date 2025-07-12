@@ -55,8 +55,27 @@ public class Constants {
     public static final int ARM_ABSOLUTE_ENCODER = 1;
     public static final int INTAKE_LINEBREAK = 2;
     public static final int INTAKE_LINEBREAK_FOLLOW = 3;
-    public static final int DISABLE_BREAK_MODE = 4
-    ;
+    public static final int DISABLE_BREAK_MODE = 4;
+  }
+
+  public static class Lights {
+    // right - 34 leds, left - 33, cross - 20
+    // LED segment lengths
+    public static final int TOTAL_LENGTH = 86;
+
+    // LED segment indices
+    public static final int RIGHT_SEGMENT_START = 0;
+    public static final int RIGHT_SEGMENT_END = 32;
+    public static final int CROSS_SEGMENT_START = 33;
+    public static final int CROSS_SEGMENT_END = 52;
+    public static final int LEFT_SEGMENT_START = 53;
+    public static final int LEFT_SEGMENT_END = 85;
+
+    // Battery charge progress bar indices
+    public static final int BATTERY_PROGRESS_START = 34;
+    public static final int BATTERY_PROGRESS_END = 48;
+    public static final int BATTERY_PROGRESS_REVERSE_START = 49;
+    public static final int BATTERY_PROGRESS_REVERSE_END = 53;
   }
 
   public static class Vision {
@@ -237,6 +256,20 @@ public class Constants {
       config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
       return config;
     }
+
+    public static TalonFXConfiguration getRollerConfig() {
+      TalonFXConfiguration config = new TalonFXConfiguration();
+      config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+      config.CurrentLimits.StatorCurrentLimit = 80.0;
+      config.CurrentLimits.StatorCurrentLimitEnable = true;
+      return config;
+    }
+
+    public static TalonFXConfiguration getCenteringConfig() {
+      TalonFXConfiguration config = new TalonFXConfiguration();
+      config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+      return config;
+    }
   }
 
   public static class Elevator {
@@ -262,6 +295,12 @@ public class Constants {
       config.Slot0.kP = 70.0;
       config.MotionMagic.MotionMagicAcceleration = 7.0; // reduced from 14.0 to 10.0
       config.MotionMagic.MotionMagicCruiseVelocity = 1.5; // reduced from 3.0 to 2.5
+      return config;
+    }
+
+    public static TalonFXConfiguration getFollowerConfig() {
+      TalonFXConfiguration config = new TalonFXConfiguration();
+      config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
       return config;
     }
   }
@@ -298,6 +337,14 @@ public class Constants {
       config.MotionMagic.MotionMagicCruiseVelocity = 1.0; // reduced from 2.0 to 1.5 rps
       config.CurrentLimits.StatorCurrentLimit = 70.0;
       config.CurrentLimits.SupplyCurrentLimit = 50.0;
+      return config;
+    }
+
+    public static TalonFXConfiguration getRollerConfig() {
+      TalonFXConfiguration config = new TalonFXConfiguration();
+      config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+      config.CurrentLimits.StatorCurrentLimit = 80.0;
+      config.CurrentLimits.StatorCurrentLimitEnable = true;
       return config;
     }
   }

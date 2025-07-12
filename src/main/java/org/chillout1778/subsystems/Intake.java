@@ -1,10 +1,7 @@
 package org.chillout1778.subsystems;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -71,21 +68,10 @@ public class Intake extends SubsystemBase {
     pivotMotor.getConfigurator().apply(Constants.Intake.getPivotConfig());
 
     rollerMotor = new TalonFX(Constants.CanIds.INTAKE_ROLLER_MOTOR);
-    rollerMotor
-        .getConfigurator()
-        .apply(
-            new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive)
-        );
-    rollerMotor
-        .getConfigurator()
-        .apply(
-            new CurrentLimitsConfigs().withStatorCurrentLimit(80.0)
-        );
+    rollerMotor.getConfigurator().apply(Constants.Intake.getRollerConfig());
 
     centeringMotor = new TalonFX(Constants.CanIds.INTAKE_CENTERING_MOTOR);
-    centeringMotor
-        .getConfigurator()
-        .apply(new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive));
+    centeringMotor.getConfigurator().apply(Constants.Intake.getCenteringConfig());
 
     linebreak = new DigitalInput(Constants.DioIds.INTAKE_LINEBREAK);
     linebreakFoller = new DigitalInput(Constants.DioIds.INTAKE_LINEBREAK_FOLLOW);
@@ -139,7 +125,8 @@ public class Intake extends SubsystemBase {
 
   // Kotlin: val hasCoral get() = !linebreak.get() || Controls.operatorController.hid.touchpadButton
   public boolean hasCoral() {
-    return !(linebreak.get() || linebreakFoller.get()) || Controls.operatorController.getHID().getTouchpadButton();
+    return !(linebreak.get() || linebreakFoller.get())
+        || Controls.operatorController.getHID().getTouchpadButton();
   }
 
   // Kotlin: val atSetpoint get() = Math.abs(angle - effectivePivotState.angleSetpoint) <
@@ -220,7 +207,9 @@ public class Intake extends SubsystemBase {
     Utils.addClosedLoopProperties("Intake Pivot", pivotMotor, builder);
     Utils.addClosedLoopProperties("Intake Roller", rollerMotor, builder);
     builder.addBooleanProperty("unsafe for intake to go up?", this::isUnsafeToGoUp, null);
-    builder.addStringProperty("Effective intake roller state", () -> getEffectiveRollerState().toString(), null);
-    builder.addStringProperty("Underlying intake roller state", () -> realRollerState.toString(), null);
+    builder.addStringProperty(
+        "Effective intake roller state", () -> getEffectiveRollerState().toString(), null);
+    builder.addStringProperty(
+        "Underlying intake roller state", () -> realRollerState.toString(), null);
   }
 }

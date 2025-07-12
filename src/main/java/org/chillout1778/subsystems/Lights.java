@@ -11,8 +11,9 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.chillout1778.Robot;
+import org.chillout1778.Constants;
 import org.chillout1778.Constants.DioIds;
+import org.chillout1778.Robot;
 
 public class Lights extends SubsystemBase {
   private static Lights instance;
@@ -24,8 +25,6 @@ public class Lights extends SubsystemBase {
     return instance;
   }
 
-  // right - 34 leds, left - 33, cross - 20
-  private static final int LENGTH = 86; // probs should be a constant
   private final AddressableLED leds;
   private final AddressableLEDBuffer ledBuff;
 
@@ -45,18 +44,34 @@ public class Lights extends SubsystemBase {
   private Lights() {
     leds = new AddressableLED(DioIds.ADDRESSABLE_LED);
     leds.setColorOrder(AddressableLED.ColorOrder.kRGB);
-    ledBuff = new AddressableLEDBuffer(LENGTH);
+    ledBuff = new AddressableLEDBuffer(Constants.Lights.TOTAL_LENGTH);
 
-    rightSegment = ledBuff.createView(0, 32); // right segment
-    crossSegment = ledBuff.createView(33, 52); // cross segment
-    leftSegment = ledBuff.createView(53, 85).reversed(); // left segment
-    ledBuff.createView(34, 48); // battery charge progress bar
-    ledBuff.createView(49, 53).reversed();
+    rightSegment =
+        ledBuff.createView(
+            Constants.Lights.RIGHT_SEGMENT_START,
+            Constants.Lights.RIGHT_SEGMENT_END); // right segment
+    crossSegment =
+        ledBuff.createView(
+            Constants.Lights.CROSS_SEGMENT_START,
+            Constants.Lights.CROSS_SEGMENT_END); // cross segment
+    leftSegment =
+        ledBuff
+            .createView(Constants.Lights.LEFT_SEGMENT_START, Constants.Lights.LEFT_SEGMENT_END)
+            .reversed(); // left segment
+    ledBuff.createView(
+        Constants.Lights.BATTERY_PROGRESS_START,
+        Constants.Lights.BATTERY_PROGRESS_END); // battery charge progress bar
+    ledBuff
+        .createView(
+            Constants.Lights.BATTERY_PROGRESS_REVERSE_START,
+            Constants.Lights.BATTERY_PROGRESS_REVERSE_END)
+        .reversed();
 
+        
     lightsTimer.reset();
     lightsTimer.start();
 
-    leds.setLength(LENGTH);
+    leds.setLength(Constants.Lights.TOTAL_LENGTH);
     leds.start();
   }
 

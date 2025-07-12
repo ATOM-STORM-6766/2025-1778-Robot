@@ -226,6 +226,7 @@ public class Elevator extends SubsystemBase {
     mainMotor.getConfigurator().apply(Constants.Elevator.getMotorConfig());
 
     followerMotor = new TalonFX(Constants.CanIds.ELEVATOR_FOLLOWER_MOTOR);
+    followerMotor.getConfigurator().apply(Constants.Elevator.getFollowerConfig());
     followerMotor.setControl(new Follower(mainMotor.getDeviceID(), true));
 
     for (var pair : Constants.armElevatorPairs) {

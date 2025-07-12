@@ -3,7 +3,6 @@ package org.chillout1778.subsystems;
 import static org.chillout1778.Constants.Field.BLUE_REEF_CENTER;
 
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -381,13 +380,7 @@ public class Arm extends SubsystemBase {
     armPivotMotor.getConfigurator().apply(Constants.Arm.getPivotConfig());
 
     rollerMotor = new TalonFX(Constants.CanIds.ARM_ROLLER_MOTOR);
-    rollerMotor.getConfigurator().apply(
-        new CurrentLimitsConfigs().withStatorCurrentLimit(80.0)
-    );
-    rollerMotor.getConfigurator().apply(
-        new com.ctre.phoenix6.configs.MotorOutputConfigs()
-            .withInverted(com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive)
-    );
+    rollerMotor.getConfigurator().apply(Constants.Arm.getRollerConfig());
 
     statorCurrentSignal = rollerMotor.getStatorCurrent();
     statorCurrentSignal.setUpdateFrequency(100.0);
