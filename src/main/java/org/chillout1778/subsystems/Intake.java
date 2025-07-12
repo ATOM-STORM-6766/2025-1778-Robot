@@ -1,5 +1,6 @@
 package org.chillout1778.subsystems;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -37,7 +38,7 @@ public class Intake extends SubsystemBase {
   }
 
   public enum RollerState {
-    In(-6.0, -8.0),
+    In(-6.0, -10.0),
     SlowIn(-2.0, -3.0),
     TroughOut(3.25, 0.0),
     Out(8.0, 0.0),
@@ -72,7 +73,14 @@ public class Intake extends SubsystemBase {
     rollerMotor = new TalonFX(Constants.CanIds.INTAKE_ROLLER_MOTOR);
     rollerMotor
         .getConfigurator()
-        .apply(new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive));
+        .apply(
+            new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive)
+        );
+    rollerMotor
+        .getConfigurator()
+        .apply(
+            new CurrentLimitsConfigs().withStatorCurrentLimit(80.0)
+        );
 
     centeringMotor = new TalonFX(Constants.CanIds.INTAKE_CENTERING_MOTOR);
     centeringMotor
@@ -131,7 +139,7 @@ public class Intake extends SubsystemBase {
 
   // Kotlin: val hasCoral get() = !linebreak.get() || Controls.operatorController.hid.touchpadButton
   public boolean hasCoral() {
-    return !(linebreak.get() && linebreakFoller.get()) || Controls.operatorController.getHID().getTouchpadButton();
+    return !(linebreak.get() || linebreakFoller.get()) || Controls.operatorController.getHID().getTouchpadButton();
   }
 
   // Kotlin: val atSetpoint get() = Math.abs(angle - effectivePivotState.angleSetpoint) <
@@ -210,6 +218,9 @@ public class Intake extends SubsystemBase {
         "Underlying intake pivot state", () -> realPivotState.toString(), null);
     builder.addBooleanProperty("Is Zeroed?", this::isZeroed, null);
     Utils.addClosedLoopProperties("Intake Pivot", pivotMotor, builder);
+    Utils.addClosedLoopProperties("Intake Roller", rollerMotor, builder);
     builder.addBooleanProperty("unsafe for intake to go up?", this::isUnsafeToGoUp, null);
+    builder.addStringProperty("Effective intake roller state", () -> getEffectiveRollerState().toString(), null);
+    builder.addStringProperty("Underlying intake roller state", () -> realRollerState.toString(), null);
   }
 }

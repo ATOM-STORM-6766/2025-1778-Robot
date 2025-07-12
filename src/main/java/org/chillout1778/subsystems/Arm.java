@@ -381,7 +381,13 @@ public class Arm extends SubsystemBase {
     armPivotMotor.getConfigurator().apply(Constants.Arm.getPivotConfig());
 
     rollerMotor = new TalonFX(Constants.CanIds.ARM_ROLLER_MOTOR);
-    rollerMotor.getConfigurator().apply(new CurrentLimitsConfigs().withStatorCurrentLimit(80.0));
+    rollerMotor.getConfigurator().apply(
+        new CurrentLimitsConfigs().withStatorCurrentLimit(80.0)
+    );
+    rollerMotor.getConfigurator().apply(
+        new com.ctre.phoenix6.configs.MotorOutputConfigs()
+            .withInverted(com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive)
+    );
 
     statorCurrentSignal = rollerMotor.getStatorCurrent();
     statorCurrentSignal.setUpdateFrequency(100.0);

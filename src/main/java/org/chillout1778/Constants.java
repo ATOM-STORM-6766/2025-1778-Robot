@@ -232,8 +232,8 @@ public class Constants {
       config.Slot0.kG = 0.0;
       config.Slot0.kP = 160.0;
       config.MotionMagic.MotionMagicJerk = 2000.0;
-      config.MotionMagic.MotionMagicAcceleration = 200.0;
-      config.MotionMagic.MotionMagicCruiseVelocity = 2.0;
+      config.MotionMagic.MotionMagicAcceleration = 100.0; // reduced from 200.0 to 100.0
+      config.MotionMagic.MotionMagicCruiseVelocity = 1.0; // reduced from 2.0 to 1.0
       config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
       return config;
     }
@@ -260,8 +260,8 @@ public class Constants {
       config.Slot0.kA = 0.0;
       config.Slot0.kG = 0.37;
       config.Slot0.kP = 70.0;
-      config.MotionMagic.MotionMagicAcceleration = 14.0;
-      config.MotionMagic.MotionMagicCruiseVelocity = 3.0;
+      config.MotionMagic.MotionMagicAcceleration = 7.0; // reduced from 14.0 to 10.0
+      config.MotionMagic.MotionMagicCruiseVelocity = 1.5; // reduced from 3.0 to 2.5
       return config;
     }
   }
@@ -271,9 +271,9 @@ public class Constants {
     public static final double ALLOWED_OPERATING_RANGE_MIN = Math.toRadians(-350.0);
     public static final double ALLOWED_OPERATING_RANGE_MAX = Math.toRadians(350.0);
     public static final double PIVOT_ENCODER_RATIO =
-        (36.0 / 16.0) * (36.0 / 16.0) * (60.0 / 20.0) * (12.0 / 54.0);
+        (36.0 / 16.0) * (36.0 / 16.0) * (60.0 / 24.0) * (12.0 / 54.0);
     public static final double PIVOT_GEAR_RATIO = (12.0 / 60.0) * (20.0 / 60.0) * (12.0 / 54.0);
-    public static final double PIVOT_ABS_ENCODER_OFFSET_ENCODER_ROTATIONS = 0.421;
+    public static final double PIVOT_ABS_ENCODER_OFFSET_ENCODER_ROTATIONS = 0.431;
     public static final double CORAL_CENTER_OFFSET = Units.inchesToMeters(9.5);
     public static final double SAFE_DISTANCE_FROM_REEF_CENTER = Units.inchesToMeters(70.0);
     public static final double SAFE_PLACEMENT_DISTANCE = Units.inchesToMeters(60.0);
@@ -294,8 +294,8 @@ public class Constants {
       config.Slot0.kG = 0.0;
       config.Slot0.kP = 80.0; // volts per rotation
       config.MotionMagic.MotionMagicJerk = 9999.0;
-      config.MotionMagic.MotionMagicAcceleration = 4.5;
-      config.MotionMagic.MotionMagicCruiseVelocity = 2.0; // rps
+      config.MotionMagic.MotionMagicAcceleration = 2.0; // reduced from 4.5 to 3.0
+      config.MotionMagic.MotionMagicCruiseVelocity = 1.0; // reduced from 2.0 to 1.5 rps
       config.CurrentLimits.StatorCurrentLimit = 70.0;
       config.CurrentLimits.SupplyCurrentLimit = 50.0;
       return config;

@@ -78,24 +78,29 @@ public class Superstructure extends SubsystemBase {
         Intake.RollerState.TroughOut),
     PrepareL4(Elevator.State.L4, Arm.PivotState.AboveScoreCoral, Arm.RollerState.Idle),
     StartL4(Elevator.State.L4, Arm.PivotState.L4ScoreCoral, Arm.RollerState.SlowIdle),
-    PlaceL4(Elevator.State.ScoreL4, Arm.PivotState.L4FinishScoreCoral, Arm.RollerState.Off),
-    AfterL4(Elevator.State.PreHandoff, Arm.PivotState.Down, Arm.RollerState.SlowOut),
+    PlaceL4(Elevator.State.ScoreL4, Arm.PivotState.L4FinishScoreCoral, Arm.RollerState.SlowOut),
+    AfterL4(Elevator.State.PreHandoff, Arm.PivotState.Down, Arm.RollerState.Out),
+    
     PrepareL3(Elevator.State.L3, Arm.PivotState.AboveScoreCoral, Arm.RollerState.Idle),
     StartL3(Elevator.State.L3, Arm.PivotState.ScoreCoral, Arm.RollerState.SlowIdle),
-    PlaceL3(Elevator.State.ScoreL3, Arm.PivotState.FinishScoreCoral, Arm.RollerState.Off),
-    AfterL3(Elevator.State.PostL3, Arm.PivotState.Up, Arm.RollerState.SlowOut),
+    PlaceL3(Elevator.State.ScoreL3, Arm.PivotState.FinishScoreCoral, Arm.RollerState.SlowOut),
+    AfterL3(Elevator.State.PostL3, Arm.PivotState.Up, Arm.RollerState.Out),
+    
     PrepareL2(Elevator.State.L2, Arm.PivotState.AboveScoreCoral, Arm.RollerState.Idle),
     StartL2(Elevator.State.L2, Arm.PivotState.ScoreCoral, Arm.RollerState.SlowIdle),
     PlaceL2(Elevator.State.ScoreL2, Arm.PivotState.FinishScoreCoral, Arm.RollerState.SlowOut),
     AfterL2(Elevator.State.PostL2, Arm.PivotState.Up, Arm.RollerState.Out),
+    
     PreGetAlgae(Elevator.State.HighAlgae, Arm.PivotState.SafeInsideRobotAngle, Arm.RollerState.In),
     GetAlgae(Elevator.State.AutoAlgae, Arm.PivotState.GetAlgae, Arm.RollerState.In),
     PostGetAlgae(Elevator.State.AutoAlgae, Arm.PivotState.PostAlgae, Arm.RollerState.AlgaeIdle),
     AlgaeRest(Elevator.State.AlgaeRest, Arm.PivotState.AlgaeUp, Arm.RollerState.AlgaeIdle),
+    
     PreBarge(Elevator.State.Barge, Arm.PivotState.PreBarge, Arm.RollerState.AlgaeIdle),
     ScoreBarge(Elevator.State.Barge, Arm.PivotState.BargeScore, Arm.RollerState.Out),
     AlgaeDescore(Elevator.State.AutoAlgae, Arm.PivotState.DescoreAlgae, Arm.RollerState.Descore),
     AlgaeExit(Elevator.State.PreHandoff, Arm.PivotState.Down, Arm.RollerState.Out),
+    
     PreProcessor(Elevator.State.Processor, Arm.PivotState.Processor, Arm.RollerState.AlgaeIdle),
     ScoreProcessor(Elevator.State.Processor, Arm.PivotState.Processor, Arm.RollerState.SlowOut),
     PreAlgaeGroundIntake(
