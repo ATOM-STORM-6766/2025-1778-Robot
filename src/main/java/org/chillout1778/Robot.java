@@ -76,6 +76,7 @@ public class Robot extends TimedRobot {
     Shuffleboard.getTab("Subsystems").add(Intake.getInstance());
     Shuffleboard.getTab("Subsystems").add(Superstructure.getInstance());
     Shuffleboard.getTab("Subsystems").add(Vision.getInstance());
+    // Shuffleboard.getTab("Subsystems").add(SwerveNext.getInstance());
 
     for (String trajectoryName :
         Arrays.stream(Choreo.availableTrajectories())

@@ -312,7 +312,7 @@ public class Constants {
     public static final double PIVOT_ENCODER_RATIO =
         (36.0 / 16.0) * (36.0 / 16.0) * (60.0 / 24.0) * (12.0 / 54.0);
     public static final double PIVOT_GEAR_RATIO = (12.0 / 60.0) * (20.0 / 60.0) * (12.0 / 54.0);
-    public static final double PIVOT_ABS_ENCODER_OFFSET_ENCODER_ROTATIONS = 0.446; // 0.815 0.154
+    public static final double PIVOT_ABS_ENCODER_OFFSET_ENCODER_ROTATIONS = 0.446;
     public static final double CORAL_CENTER_OFFSET = Units.inchesToMeters(9.5);
     public static final double SAFE_DISTANCE_FROM_REEF_CENTER = Units.inchesToMeters(70.0);
     public static final double SAFE_PLACEMENT_DISTANCE = Units.inchesToMeters(60.0);
@@ -617,13 +617,13 @@ public class Constants {
     }
 
     public static PIDController makeAlignTurnPID() {
-      PIDController pid = new PIDController(1.22, 0.0, 0.1);
+      PIDController pid = new PIDController(1.15, 0.0, 0.1);
       pid.enableContinuousInput(-Math.PI, Math.PI);
       return pid;
     }
 
     public static PIDController makeAlignDrivePID() {
-      return new PIDController(2, 0.0, 0.0);
+      return new PIDController(2, 0.0, 0.02);
     }
 
     public static PIDController makeBargeAlignDrivePID() {

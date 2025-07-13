@@ -20,8 +20,6 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import java.util.Optional;
-import org.chillout1778.subsystems.SwerveNext;
 
 public class Telemetry {
   private final double MaxSpeed = Constants.SwerveNext.kSpeedAt12Volts.in(MetersPerSecond);
@@ -59,21 +57,6 @@ public class Telemetry {
   private final NetworkTable table = inst.getTable("Pose");
   private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose").publish();
   private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
-
-  /* Target poses for alignment and scoring */
-  private final NetworkTable targetPosesTable = inst.getTable("TargetPoses");
-  private final StructPublisher<Pose2d> closestFudgedScoringPose =
-      targetPosesTable.getStructTopic("ClosestFudgedScoringPose", Pose2d.struct).publish();
-  private final StructPublisher<Pose2d> closestAlgaeGrabPose =
-      targetPosesTable.getStructTopic("ClosestAlgaeGrabPose", Pose2d.struct).publish();
-  private final StructPublisher<Pose2d> closestTroughScoringPose =
-      targetPosesTable.getStructTopic("ClosestTroughScoringPose", Pose2d.struct).publish();
-  private final DoubleArrayPublisher closestFudgedScoringPoseArray =
-      targetPosesTable.getDoubleArrayTopic("ClosestFudgedScoringPoseArray").publish();
-  private final DoubleArrayPublisher closestAlgaeGrabPoseArray =
-      targetPosesTable.getDoubleArrayTopic("ClosestAlgaeGrabPoseArray").publish();
-  private final DoubleArrayPublisher closestTroughScoringPoseArray =
-      targetPosesTable.getDoubleArrayTopic("ClosestTroughScoringPoseArray").publish();
 
   /* Mechanisms to represent the swerve module states */
   private final Mechanism2d[] m_moduleMechanisms =
@@ -116,9 +99,6 @@ public class Telemetry {
   private final double[] m_poseArray = new double[3];
   private final double[] m_moduleStatesArray = new double[8];
   private final double[] m_moduleTargetsArray = new double[8];
-  private final double[] m_closestFudgedScoringPoseArray = new double[3];
-  private final double[] m_closestAlgaeGrabPoseArray = new double[3];
-  private final double[] m_closestTroughScoringPoseArray = new double[3];
 
   /** Accept the swerve drive state and telemeterize it to SmartDashboard and SignalLogger. */
   public void telemeterize(SwerveDriveState state) {
@@ -131,40 +111,6 @@ public class Telemetry {
     driveModulePositions.set(state.ModulePositions);
     driveTimestamp.set(state.Timestamp);
     driveOdometryFrequency.set(1.0 / state.OdometryPeriod);
-
-    /* Get SwerveNext instance for target poses */
-    SwerveNext swerveNext = SwerveNext.getInstance();
-    
-    /* Telemeterize target poses */
-    Optional<SwerveNext.IndexedPose2d> fudgedScoringPose = swerveNext.getClosestFudgedScoringPose();
-    if (fudgedScoringPose.isPresent()) {
-      Pose2d pose = fudgedScoringPose.get().getPose();
-      closestFudgedScoringPose.set(pose);
-      m_closestFudgedScoringPoseArray[0] = pose.getX();
-      m_closestFudgedScoringPoseArray[1] = pose.getY();
-      m_closestFudgedScoringPoseArray[2] = pose.getRotation().getDegrees();
-      closestFudgedScoringPoseArray.set(m_closestFudgedScoringPoseArray);
-    }
-    
-    Optional<Pose2d> algaeGrabPose = swerveNext.getClosestAlgaeGrabPose();
-    if (algaeGrabPose.isPresent()) {
-      Pose2d pose = algaeGrabPose.get();
-      closestAlgaeGrabPose.set(pose);
-      m_closestAlgaeGrabPoseArray[0] = pose.getX();
-      m_closestAlgaeGrabPoseArray[1] = pose.getY();
-      m_closestAlgaeGrabPoseArray[2] = pose.getRotation().getDegrees();
-      closestAlgaeGrabPoseArray.set(m_closestAlgaeGrabPoseArray);
-    }
-    
-    Optional<Pose2d> troughScoringPose = swerveNext.getClosestTroughScoringPose();
-    if (troughScoringPose.isPresent()) {
-      Pose2d pose = troughScoringPose.get();
-      closestTroughScoringPose.set(pose);
-      m_closestTroughScoringPoseArray[0] = pose.getX();
-      m_closestTroughScoringPoseArray[1] = pose.getY();
-      m_closestTroughScoringPoseArray[2] = pose.getRotation().getDegrees();
-      closestTroughScoringPoseArray.set(m_closestTroughScoringPoseArray);
-    }
 
     /* Also write to log file */
     m_poseArray[0] = state.Pose.getX();
@@ -181,17 +127,6 @@ public class Telemetry {
     SignalLogger.writeDoubleArray("DriveState/ModuleStates", m_moduleStatesArray);
     SignalLogger.writeDoubleArray("DriveState/ModuleTargets", m_moduleTargetsArray);
     SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
-    
-    /* Also write target poses to log file */
-    if (fudgedScoringPose.isPresent()) {
-      SignalLogger.writeDoubleArray("TargetPoses/ClosestFudgedScoringPose", m_closestFudgedScoringPoseArray);
-    }
-    if (algaeGrabPose.isPresent()) {
-      SignalLogger.writeDoubleArray("TargetPoses/ClosestAlgaeGrabPose", m_closestAlgaeGrabPoseArray);
-    }
-    if (troughScoringPose.isPresent()) {
-      SignalLogger.writeDoubleArray("TargetPoses/ClosestTroughScoringPose", m_closestTroughScoringPoseArray);
-    }
 
     /* Telemeterize the pose to a Field2d */
     fieldTypePub.set("Field2d");
