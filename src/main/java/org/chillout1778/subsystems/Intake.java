@@ -125,7 +125,7 @@ public class Intake extends SubsystemBase {
 
   // Kotlin: val hasCoral get() = !linebreak.get() || Controls.operatorController.hid.touchpadButton
   public boolean hasCoral() {
-    return !(linebreak.get() || linebreakFoller.get())
+    return !linebreakFoller.get()
         || Controls.operatorController.getHID().getTouchpadButton();
   }
 
@@ -211,5 +211,8 @@ public class Intake extends SubsystemBase {
         "Effective intake roller state", () -> getEffectiveRollerState().toString(), null);
     builder.addStringProperty(
         "Underlying intake roller state", () -> realRollerState.toString(), null);
+    builder.addBooleanProperty("Intake linebreak", () -> linebreak.get(), null);
+    builder.addBooleanProperty("Intake linebreakFollower", () -> linebreakFoller.get(), null);
+
   }
 }

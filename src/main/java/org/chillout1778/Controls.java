@@ -71,7 +71,7 @@ public class Controls {
 
   public static DriveInputs driverInputs() {
     return new DriveInputs(
-        driverController.getRawAxis(1),
+        -driverController.getRawAxis(1),
         -driverController.getRawAxis(0),
         -driverController.getRawAxis(4),
         0.05,
