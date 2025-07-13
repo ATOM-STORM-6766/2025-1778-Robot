@@ -31,10 +31,11 @@ public class Vision extends SubsystemBase {
     public Camera(String initialName, Transform3d robotToCamera) {
       super(initialName);
 
-      this.poseEstimator = new PhotonPoseEstimator(
-          AprilTagFieldLayout.loadField(Constants.Vision.FIELD_TYPE),
-          PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-          robotToCamera);
+      this.poseEstimator =
+          new PhotonPoseEstimator(
+              AprilTagFieldLayout.loadField(Constants.Vision.FIELD_TYPE),
+              PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+              robotToCamera);
       poseEstimator.setTagModel(TargetModel.kAprilTag36h11);
       poseEstimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
     }
@@ -53,16 +54,16 @@ public class Vision extends SubsystemBase {
   private Vision() {
     swerve = SwerveNext.getInstance();
 
-    cameras = new Camera[] {
-        new Camera(Constants.Vision.FRONT_RIGHT_NAME, Constants.Vision.FRONT_RIGHT_TRANSFORM),
-        new Camera(Constants.Vision.FRONT_LEFT_NAME, Constants.Vision.FRONT_LEFT_TRANSFORM),
-        new Camera(Constants.Vision.BACK_RIGHT_NAME, Constants.Vision.BACK_RIGHT_TRANSFORM),
-        new Camera(Constants.Vision.BACK_LEFT_NAME, Constants.Vision.BACK_LEFT_TRANSFORM)
-    };
+    cameras =
+        new Camera[] {
+          new Camera(Constants.Vision.FRONT_RIGHT_NAME, Constants.Vision.FRONT_RIGHT_TRANSFORM),
+          new Camera(Constants.Vision.FRONT_LEFT_NAME, Constants.Vision.FRONT_LEFT_TRANSFORM),
+          new Camera(Constants.Vision.BACK_RIGHT_NAME, Constants.Vision.BACK_RIGHT_TRANSFORM),
+          new Camera(Constants.Vision.BACK_LEFT_NAME, Constants.Vision.BACK_LEFT_TRANSFORM)
+        };
 
     // 初始化记录数组
     latestEstimatedPose = new Pose2d();
-
   }
 
   @Override
@@ -80,11 +81,13 @@ public class Vision extends SubsystemBase {
             .filter(Optional::isPresent)
             .map(Optional::get)
             .filter(
-                pose -> Utils.isInsideField(pose.estimatedPose.getTranslation().toTranslation2d())
-                    && (pose.strategy == PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
-                        || (pose.strategy == PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY
-                            && pose.targetsUsed.get(0).getPoseAmbiguity() < 0.05
-                            && pose.targetsUsed.get(0).getArea() > 0.25)))
+                pose ->
+                    Utils.isInsideField(pose.estimatedPose.getTranslation().toTranslation2d())
+                        && (pose.strategy
+                                == PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
+                            || (pose.strategy == PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY
+                                && pose.targetsUsed.get(0).getPoseAmbiguity() < 0.05
+                                && pose.targetsUsed.get(0).getArea() > 0.25)))
             .forEach(
                 pose -> {
                   // 记录最新的估计位置
@@ -92,7 +95,8 @@ public class Vision extends SubsystemBase {
 
                   // 向 swerve 添加视觉测量
                   swerve.addVisionMeasurement(
-                      pose.estimatedPose.toPose2d(), com.ctre.phoenix6.Utils.fpgaToCurrentTime(pose.timestampSeconds));
+                      pose.estimatedPose.toPose2d(),
+                      com.ctre.phoenix6.Utils.fpgaToCurrentTime(pose.timestampSeconds));
                 });
       }
     }
@@ -118,12 +122,15 @@ public class Vision extends SubsystemBase {
   public void initSendable(SendableBuilder builder) {
     // 相机连接状态
     builder.addBooleanProperty("All Cameras Connected", this::allConnected, null);
-    builder.addDoubleArrayProperty("Latest Estimated Poses", () -> {
-      double[] poses = new double[3];
-      poses[0] = latestEstimatedPose.getX();
-      poses[1] = latestEstimatedPose.getY();
-      poses[2] = latestEstimatedPose.getRotation().getDegrees();
-      return poses;
-    }, null);
+    builder.addDoubleArrayProperty(
+        "Latest Estimated Poses",
+        () -> {
+          double[] poses = new double[3];
+          poses[0] = latestEstimatedPose.getX();
+          poses[1] = latestEstimatedPose.getY();
+          poses[2] = latestEstimatedPose.getRotation().getDegrees();
+          return poses;
+        },
+        null);
   }
 }

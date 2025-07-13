@@ -67,7 +67,6 @@ public class Lights extends SubsystemBase {
             Constants.Lights.BATTERY_PROGRESS_REVERSE_END)
         .reversed();
 
-        
     lightsTimer.reset();
     lightsTimer.start();
 

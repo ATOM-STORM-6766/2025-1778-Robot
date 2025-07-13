@@ -179,6 +179,6 @@ public class Controls {
         operatorController.getHID().getCircleButton(), // wantScoreProcessor
         operatorController.getHID().getL1Button(), // wantAlgaeGroundIntake
         false // wantPopsiclePickup
-    );
+        );
   }
 }
