@@ -98,11 +98,11 @@ public class Constants {
             new Rotation3d(0.0, Math.toRadians(-30.0), Math.toRadians(-(180.0 - 60.0))));
     public static final Transform3d FRONT_LEFT_TRANSFORM =
         new Transform3d(
-            new Translation3d(0.016429, 0.324519, 0.18735),
+            new Translation3d(-0.016429, 0.324519, 0.18735),
             new Rotation3d(0.0, Math.toRadians(-30.0), Math.toRadians(60.0)));
     public static final Transform3d BACK_LEFT_TRANSFORM =
         new Transform3d(
-            new Translation3d(0.079749, 0.324875, 0.187354),
+            new Translation3d(-0.079749, 0.324875, 0.187354),
             new Rotation3d(0.0, Math.toRadians(-30.0), Math.toRadians(180.0 - 60.0)));
   }
 
