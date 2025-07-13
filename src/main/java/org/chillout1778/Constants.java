@@ -343,7 +343,7 @@ public class Constants {
     public static TalonFXConfiguration getRollerConfig() {
       TalonFXConfiguration config = new TalonFXConfiguration();
       config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-      config.CurrentLimits.StatorCurrentLimit = 80.0;
+      config.CurrentLimits.StatorCurrentLimit = 40.0;
       config.CurrentLimits.StatorCurrentLimitEnable = true;
       return config;
     }
@@ -367,19 +367,19 @@ public class Constants {
             .withKP(5)
             .withKI(0)
             .withKD(0.01)
-            .withKS(0.25727)
-            .withKV(1.6302)
-            .withKA(0)
+            .withKS(0.27)
+            .withKV(2.5)
+            .withKA(0.06)
             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
     // 当使用闭环控制时，驱动电机使用由 SwerveModuleConstants.DriveMotorClosedLoopOutput 指定的控制输出类型
     private static final Slot0Configs driveGains =
         new Slot0Configs()
-            .withKP(0.17494)
+            .withKP(0.17654)
             .withKI(0)
             .withKD(0)
             .withKS(0.1237)
-            .withKV(0.12354)
-            .withKA(0.014822);
+            .withKV(0.12013)
+            .withKA(0.0057392);
 
     // 用于转向电机的闭环输出类型；
     // 这会影响转向电机的 PID/FF 增益
@@ -581,7 +581,7 @@ public class Constants {
   }
 
   public static class SwerveDriveKinematics {
-    public static final double ALIGNMENT_TOLERANCE = 0.04;
+    public static final double ALIGNMENT_TOLERANCE = 0.10;
     public static final double STARTING_TOLERANCE = 0.15;
 
     // How far the swerve modules are from (0,0).
@@ -617,17 +617,17 @@ public class Constants {
     }
 
     public static PIDController makeAlignTurnPID() {
-      PIDController pid = new PIDController(1.15, 0.0, 0.1);
+      PIDController pid = new PIDController(1.05, 0.0, 0.1);
       pid.enableContinuousInput(-Math.PI, Math.PI);
       return pid;
     }
 
     public static PIDController makeAlignDrivePID() {
-      return new PIDController(1.15, 0.0, 0.0);
+      return new PIDController(0.95, 0.0, 0.0);
     }
 
     public static PIDController makeBargeAlignDrivePID() {
-      return new PIDController(1.15, 0.0, 0.0);
+      return new PIDController(0.95, 0.0, 0.0);
     }
   }
 

@@ -44,7 +44,7 @@ public class Elevator extends SubsystemBase {
     PostL3(L2.rawExtension - Units.inchesToMeters(6.0)), // TODO: Tune
     PostL2(L2.rawExtension - Units.inchesToMeters(3.5)), // TODO: Tune
     AutoAlgae(Units.inchesToMeters(21.75)),
-    LowAlgae(Units.inchesToMeters(22.25)),
+    LowAlgae(Units.inchesToMeters(21.75)),
     HighAlgae(LowAlgae.rawExtension + Units.inchesToMeters(15.8701)),
     Processor(Units.inchesToMeters(20.0)),
     AlgaeRest(Units.inchesToMeters(15.0)),

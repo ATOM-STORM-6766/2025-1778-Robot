@@ -76,7 +76,7 @@ public class Arm extends SubsystemBase {
     SafeInsideRobotAngle(Math.PI - Constants.Arm.SAFE_INSIDE_ROBOT_ANGLE, MirrorType.ClosestToReef),
     PreBarge(Math.toRadians(160.0), MirrorType.AlgaeScore),
     BargeScore(Math.toRadians(160.0), MirrorType.AlgaeScore),
-    Processor(Math.toRadians(70.0), MirrorType.ProcessorScore),
+    Processor(Math.toRadians(80.0), MirrorType.ProcessorScore),
     AlgaeGroundPickup(Math.toRadians(-78.0), MirrorType.ActuallyFixedAngle),
     ExitAlgaeGroundPickup(Math.toRadians(-95.0), MirrorType.ActuallyFixedAngle),
     PopsiclePickup(Math.toRadians(-80.0), MirrorType.ActuallyFixedAngle);
