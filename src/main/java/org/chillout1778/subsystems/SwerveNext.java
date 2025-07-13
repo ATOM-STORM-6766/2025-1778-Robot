@@ -19,6 +19,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -34,7 +36,7 @@ import org.chillout1778.Constants;
 import org.chillout1778.Robot;
 
 /** 扩展 Phoenix 6 SwerveDrivetrain 类并实现 Subsystem 接口的类， 使其可以在基于命令的项目中轻松使用。 集成了原 Swerve.java 的业务逻辑。 */
-public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> implements Subsystem {
+public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> implements Subsystem, Sendable {
   private static SwerveNext instance;
 
   public static SwerveNext getInstance() {
@@ -328,5 +330,35 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
               });
       m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.addDoubleArrayProperty("Coral L234 Score Positiion", () -> {
+      double[] poses = new double[3];
+      Pose2d coralL234ScorePose = getClosestFudgedScoringPose().get().getPose();
+      poses[0] = coralL234ScorePose.getX();
+      poses[1] = coralL234ScorePose.getY();
+      poses[2] = coralL234ScorePose.getRotation().getDegrees();
+      return poses;
+    }, null);
+
+    builder.addDoubleArrayProperty("Coral L1 Score Positiion", () -> {
+      double[] poses = new double[3];
+      Pose2d coralL1ScorePose = getClosestTroughScoringPose().get();
+      poses[0] = coralL1ScorePose.getX();
+      poses[1] = coralL1ScorePose.getY();
+      poses[2] = coralL1ScorePose.getRotation().getDegrees();
+      return poses;
+    }, null);
+
+    builder.addDoubleArrayProperty("Algae Grabbing Positiion", () -> {
+      double[] poses = new double[3];
+      Pose2d coralL234AlgaeGrabbingPose = getClosestAlgaeGrabPose().get();
+      poses[0] = coralL234AlgaeGrabbingPose.getX();
+      poses[1] = coralL234AlgaeGrabbingPose.getY();
+      poses[2] = coralL234AlgaeGrabbingPose.getRotation().getDegrees();
+      return poses;
+    }, null);
   }
 }
