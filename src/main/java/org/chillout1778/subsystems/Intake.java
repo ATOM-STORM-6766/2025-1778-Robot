@@ -22,7 +22,7 @@ public class Intake extends SubsystemBase {
 
   // Angles measured positive downward, and the stowed starting position is 0.0.
   public enum PivotState {
-    Down(Math.toRadians(126.0)),
+    Down(Math.toRadians(130.0)),
     Trough(Math.toRadians(25.639507)),
     Up(0.0),
     OperatorControl(0.0);

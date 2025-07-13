@@ -1,6 +1,7 @@
 package org.chillout1778.subsystems;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -45,8 +46,10 @@ public class Vision extends SubsystemBase {
   }
 
   private final Camera[] cameras;
-  private final Thread visionThread;
   private final SwerveNext swerve;
+  
+  // 记录每个相机的最新估计位置
+  private Pose2d latestEstimatedPose;
 
   private Vision() {
     swerve = SwerveNext.getInstance();
@@ -58,40 +61,43 @@ public class Vision extends SubsystemBase {
           new Camera(Constants.Vision.BACK_RIGHT_NAME, Constants.Vision.BACK_RIGHT_TRANSFORM),
           new Camera(Constants.Vision.BACK_LEFT_NAME, Constants.Vision.BACK_LEFT_TRANSFORM)
         };
+    
+    // 初始化记录数组
+    latestEstimatedPose = new Pose2d();
 
-    visionThread = new Thread(this::updateVision);
-    visionThread.setDaemon(true);
-    visionThread.start();
+  }
+
+  @Override
+  public void periodic() {
+    updateVision();
   }
 
   private void updateVision() {
-    while (!Thread.currentThread().isInterrupted()) {
-      for (Camera camera : cameras) {
-        if (camera.isConnected()) {
-          camera.getAllUnreadResults().stream()
-              .filter(result -> !removeResult(result))
-              .map(result -> camera.getPoseEstimator().update(result))
-              .filter(Optional::isPresent)
-              .map(Optional::get)
-              .filter(
-                  pose ->
-                      Utils.isInsideField(pose.estimatedPose.getTranslation().toTranslation2d())
-                          && (pose.strategy
-                                  == PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
-                              || (pose.strategy == PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY
-                                  && pose.targetsUsed.get(0).getPoseAmbiguity() < 0.05
-                                  && pose.targetsUsed.get(0).getArea() > 0.25)))
-              .forEach(
-                  pose ->
-                      swerve.addVisionMeasurement(
-                          pose.estimatedPose.toPose2d(), pose.timestampSeconds));
-        }
-
-        try {
-          Thread.sleep(20); // 50Hz
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-        }
+    for (int i = 0; i < cameras.length; i++) {
+      Camera camera = cameras[i];
+      if (camera.isConnected()) {
+        camera.getAllUnreadResults().stream()
+            .filter(result -> !removeResult(result))
+            .map(result -> camera.getPoseEstimator().update(result))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .filter(
+                pose ->
+                    Utils.isInsideField(pose.estimatedPose.getTranslation().toTranslation2d())
+                        && (pose.strategy
+                                == PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
+                            || (pose.strategy == PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY
+                                && pose.targetsUsed.get(0).getPoseAmbiguity() < 0.05
+                                && pose.targetsUsed.get(0).getArea() > 0.25)))
+            .forEach(
+                pose -> {
+                  // 记录最新的估计位置
+                  latestEstimatedPose = pose.estimatedPose.toPose2d();
+                  
+                  // 向 swerve 添加视觉测量
+                  swerve.addVisionMeasurement(
+                      pose.estimatedPose.toPose2d(), pose.timestampSeconds);
+                });
       }
     }
   }
@@ -114,9 +120,14 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    for (Camera camera : cameras) {
-      builder.addBooleanProperty(
-          camera.getName() + " connection status", camera::isConnected, null);
-    }
+    // 相机连接状态
+    builder.addBooleanProperty("All Cameras Connected", this::allConnected, null);
+    builder.addDoubleArrayProperty("Latest Estimated Poses", () -> {
+      double[] poses = new double[3];
+      poses[0] = latestEstimatedPose.getX();
+      poses[1] = latestEstimatedPose.getY();
+      poses[2] = latestEstimatedPose.getRotation().getDegrees();
+      return poses;
+    }, null);
   }
 }

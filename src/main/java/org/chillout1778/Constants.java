@@ -428,7 +428,7 @@ public class Constants {
 
     // 在 12V 输出电压下的理论最大速度（m/s）；
     // 这需要根据您的具体机器人进行调整
-    public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(5.0);
+    public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(0.5);
 
     // 方位每旋转 1 圈会导致驱动电机转动 kCoupleRatio 圈；
     // 这可能需要根据您的具体机器人进行调整
@@ -588,7 +588,7 @@ public class Constants {
     public static final double XY_DISTANCE = Units.inchesToMeters(13.393747);
 
     // How fast the robot can move in a straight line (meters/sec).
-    public static final double MAX_VELOCITY = 5;
+    public static final double MAX_VELOCITY = 0.5;
 
     // How fast the robot can rotate (radians/sec).
     public static final double MAX_ANGULAR_VELOCITY = 10;
