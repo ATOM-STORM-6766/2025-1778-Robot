@@ -41,7 +41,7 @@ public class Arm extends SubsystemBase {
     Idle(-0.035),
     AlgaeIdle(-0.225),
     In(-1.0),
-    SlowOut(0.075),
+    SlowOut(0.5),
     Out(1.0),
     Descore(0.8);
 

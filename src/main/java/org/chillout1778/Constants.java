@@ -623,11 +623,11 @@ public class Constants {
     }
 
     public static PIDController makeAlignDrivePID() {
-      return new PIDController(2, 0.0, 0.02);
+      return new PIDController(1.15, 0.0, 0.0);
     }
 
     public static PIDController makeBargeAlignDrivePID() {
-      return new PIDController(6, 0.0, 0.0);
+      return new PIDController(1.15, 0.0, 0.0);
     }
   }
 
