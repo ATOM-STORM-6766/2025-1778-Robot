@@ -591,13 +591,13 @@ public class Constants {
     public static final double MAX_VELOCITY = 0.5;
 
     // How fast the robot can rotate (radians/sec).
-    public static final double MAX_ANGULAR_VELOCITY = 10;
+    public static final double MAX_ANGULAR_VELOCITY = 3;
 
     // Alignment constants
-    public static final double maxAlignTranslationSpeed = 1.5;
-    public static final double maxAlignRotationSpeed = 2.5;
-    public static final double maxBargeAlignTranslationSpeed = 1.5;
-    public static final double maxBargeAlignRotationSpeed = 1.5;
+    public static final double maxAlignTranslationSpeed = 0.5;
+    public static final double maxAlignRotationSpeed = 0.5;
+    public static final double maxBargeAlignTranslationSpeed = 0.5;
+    public static final double maxBargeAlignRotationSpeed = 0.5;
     public static final double MAX_NODE_DISTANCE = 3.0; // meters
 
     public static final double ALIGN_ANGLE_WEIGHT = 2.7;
@@ -617,17 +617,17 @@ public class Constants {
     }
 
     public static PIDController makeAlignTurnPID() {
-      PIDController pid = new PIDController(6.0, 0.0, 0.04);
+      PIDController pid = new PIDController(1.0, 0.0, 0.0);
       pid.enableContinuousInput(-Math.PI, Math.PI);
       return pid;
     }
 
     public static PIDController makeAlignDrivePID() {
-      return new PIDController(5.0, 0.0, 0.01);
+      return new PIDController(1.0, 0.0, 0.0);
     }
 
     public static PIDController makeBargeAlignDrivePID() {
-      return new PIDController(6.0, 0.0, 0.0);
+      return new PIDController(1.0, 0.0, 0.0);
     }
   }
 

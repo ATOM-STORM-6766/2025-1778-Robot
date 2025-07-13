@@ -52,9 +52,9 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
 
   // Alignment and Scoring Logic from Swerve.java
   private boolean isAligned = false;
-  private final PIDController xController = new PIDController(12.0, 0.0, 0.0);
-  private final PIDController yController = new PIDController(12.0, 0.0, 0.0);
-  private final PIDController headingController = new PIDController(5.0, 0.0, 0.0);
+  private final PIDController xController = new PIDController(6.0, 0.0, 0.0);
+  private final PIDController yController = new PIDController(6.0, 0.0, 0.0);
+  private final PIDController headingController = new PIDController(1.0, 0.0, 0.0);
   private final boolean[] probablyScoredPoses = new boolean[24 * 4];
 
   private static final double kSimLoopPeriod = 0.005; // 5毫秒
@@ -167,6 +167,7 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
             yController.calculate(currentPose.getY(), goalPose.getY()),
             headingController.calculate(
                 currentPose.getRotation().getRadians(), goalPose.getRotation().getRadians()));
+    
     this.setControl(
         new SwerveRequest.FieldCentric()
             .withVelocityX(speeds.vxMetersPerSecond)
