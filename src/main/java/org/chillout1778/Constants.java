@@ -617,17 +617,17 @@ public class Constants {
     }
 
     public static PIDController makeAlignTurnPID() {
-      PIDController pid = new PIDController(1.0, 0.0, 0.0);
+      PIDController pid = new PIDController(1.22, 0.0, 0.1);
       pid.enableContinuousInput(-Math.PI, Math.PI);
       return pid;
     }
 
     public static PIDController makeAlignDrivePID() {
-      return new PIDController(1.0, 0.0, 0.0);
+      return new PIDController(2, 0.0, 0.0);
     }
 
     public static PIDController makeBargeAlignDrivePID() {
-      return new PIDController(1.0, 0.0, 0.0);
+      return new PIDController(6, 0.0, 0.0);
     }
   }
 

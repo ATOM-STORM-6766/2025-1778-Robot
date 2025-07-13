@@ -166,7 +166,7 @@ public class Controls {
     lastScoringLevel = level;
     return new Superstructure.SuperstructureInputs(
         operatorController.getHID().getL2Button(), // wantExtend
-        operatorController.getHID().getR2Button(), // wantGroundIntake
+        driverController.getRawAxis(3) > 0.5, // wantGroundIntake
         operatorController.getHID().getCrossButton(), // wantArmSourceIntake
         operatorController.getHID().getSquareButton(), // wantSourceIntake
         (driverController.getRawAxis(4) > .5
@@ -179,6 +179,6 @@ public class Controls {
         operatorController.getHID().getCircleButton(), // wantScoreProcessor
         operatorController.getHID().getL1Button(), // wantAlgaeGroundIntake
         false // wantPopsiclePickup
-        );
+    );
   }
 }
