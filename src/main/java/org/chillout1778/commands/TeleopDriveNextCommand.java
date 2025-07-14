@@ -4,6 +4,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.Supplier;
 import org.chillout1778.Constants;
@@ -23,9 +24,13 @@ public class TeleopDriveNextCommand extends Command {
   private final PIDController yPID = Constants.SwerveDriveKinematics.makeAlignDrivePID();
   private final PIDController turnPID = Constants.SwerveDriveKinematics.makeAlignTurnPID();
 
+  private final Debugger debugger;
+
   public TeleopDriveNextCommand(Supplier<Controls.DriveInputs> driveInputsSupplier) {
     this.driveInputsSupplier = driveInputsSupplier;
     addRequirements(swerve);
+    debugger = new Debugger(xPID, yPID, turnPID);
+    debugger.init();
   }
 
   @Override
@@ -91,6 +96,8 @@ public class TeleopDriveNextCommand extends Command {
           break;
       }
 
+      debugger.logPose(pose);
+
       if (pose == null) {
         speeds = chassisSpeedsFromDriveInputs(inputs);
       } else {
@@ -154,5 +161,33 @@ public class TeleopDriveNextCommand extends Command {
     double actualRotation = rotation * Constants.SwerveDriveKinematics.MAX_ANGULAR_VELOCITY;
 
     return new ChassisSpeeds(actualX, actualY, actualRotation);
+  }
+
+  private static class Debugger {
+    private final PIDController xpid;
+    private final PIDController ypid;
+    private final PIDController turnpid;
+
+    Debugger(PIDController xpid, PIDController ypid, PIDController turnpid) {
+      this.xpid = xpid;
+      this.ypid = ypid;
+      this.turnpid = turnpid;
+    }
+
+    void init() {
+      SmartDashboard.putData("Teleop Align/xPID", xpid);
+      SmartDashboard.putData("Teleop Align/yPID", ypid);
+      SmartDashboard.putData("Teleop Align/turnPID", turnpid);
+    }
+
+    void logPose(Pose2d pose) {
+      if (pose != null) {
+        SmartDashboard.putNumberArray(
+            "Teleop Align/Target Pose",
+            new double[] {pose.getX(), pose.getY(), pose.getRotation().getRadians()});
+      } else {
+        SmartDashboard.putNumberArray("Teleop Align/Target Pose", new double[] {});
+      }
+    }
   }
 }

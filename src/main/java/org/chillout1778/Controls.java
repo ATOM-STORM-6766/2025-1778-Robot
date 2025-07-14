@@ -9,6 +9,7 @@ import org.chillout1778.subsystems.Superstructure;
 public class Controls {
   private static final CommandGenericHID driverController = new CommandGenericHID(0);
   public static final CommandPS5Controller operatorController = new CommandPS5Controller(1);
+  private static final CommandGenericHID testController = new CommandGenericHID(2);
 
   public enum AlignMode {
     None,
@@ -75,7 +76,7 @@ public class Controls {
         -driverController.getRawAxis(0),
         -driverController.getRawAxis(4),
         0.05,
-        getDriverAlignMode());
+        Robot.isSimulation() ? getDriverTestAlignMode() : getDriverAlignMode());
   }
 
   public static DriveInputs operatorInputs() {
@@ -85,6 +86,25 @@ public class Controls {
         -operatorController.getHID().getRightX(),
         0.1,
         getOperatorAlignMode());
+  }
+
+  private static AlignMode getDriverTestAlignMode() {
+    if (testController.getHID().getRawButton(1)) {
+      return AlignMode.ReefAlign;
+    }
+    if (testController.getHID().getRawButton(2)) {
+      return AlignMode.TroughAlign;
+    }
+    if (testController.getHID().getRawButton(3)) {
+      return AlignMode.AlgaeAlign;
+    }
+    if (testController.getHID().getRawButton(4)) {
+      return AlignMode.BargeAlign;
+    }
+    if (testController.getHID().getRawButton(5)) {
+      return AlignMode.None;
+    }
+    return AlignMode.None;
   }
 
   private static AlignMode getDriverAlignMode() {

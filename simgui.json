@@ -1,4 +1,11 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "window": {
+        "visible": false
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -6,12 +13,18 @@
       "/Shuffleboard/Robot/SendableChooser[0]": "String Chooser",
       "/Shuffleboard/Subsystems/Superstructure": "Subsystem",
       "/Shuffleboard/Swerve/Swerve Estimated Pose Field": "Field2d",
+      "/Shuffleboard/Swerve/turnpid": "PIDController",
+      "/Shuffleboard/Swerve/xpid": "PIDController",
+      "/Shuffleboard/Swerve/ypid": "PIDController",
       "/SmartDashboard/Choreo Alerts": "Alerts",
       "/SmartDashboard/Module 0": "Mechanism2d",
       "/SmartDashboard/Module 1": "Mechanism2d",
       "/SmartDashboard/Module 2": "Mechanism2d",
       "/SmartDashboard/Module 3": "Mechanism2d",
-      "/SmartDashboard/PhotonAlerts": "Alerts"
+      "/SmartDashboard/PhotonAlerts": "Alerts",
+      "/SmartDashboard/Teleop Align/turnPID": "PIDController",
+      "/SmartDashboard/Teleop Align/xPID": "PIDController",
+      "/SmartDashboard/Teleop Align/yPID": "PIDController"
     },
     "windows": {
       "/Pose": {
@@ -29,11 +42,13 @@
         "window": {
           "visible": true
         }
+      },
+      "/SmartDashboard/Teleop Align/turnPID": {
+        "window": {
+          "visible": true
+        }
       }
     }
-  },
-  "NetworkTables Info": {
-    "visible": true
   },
   "NetworkTables View": {
     "visible": false
