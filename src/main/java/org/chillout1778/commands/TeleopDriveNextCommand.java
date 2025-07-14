@@ -26,11 +26,29 @@ public class TeleopDriveNextCommand extends Command {
   private final PIDController yPID = Constants.SwerveDriveKinematics.makeAlignDrivePID();
   private final PIDController turnPID = Constants.SwerveDriveKinematics.makeAlignTurnPID();
 
+  // Angle holding variables
+  private Rotation2d lastTargetAngle = null;
+  private boolean wasRotating = false;
+
   private Pose2d lastTargetPose = null;
+
+  // 场地中心控制请求：用于自由控制机器人的移动和旋转
+  private final SwerveRequest.FieldCentric fieldCentric = new SwerveRequest.FieldCentric()
+      .withDeadband(Constants.SwerveDriveKinematics.MAX_VELOCITY * 0.1) // 设置移动死区
+      .withRotationalDeadband(Constants.SwerveDriveKinematics.MAX_ANGULAR_VELOCITY * 0.1); // 设置旋转死区
+
+  // 场地中心朝向控制请求：用于保持机器人朝向
+  private final SwerveRequest.FieldCentricFacingAngle facingAngle = new SwerveRequest.FieldCentricFacingAngle()
+      .withDeadband(Constants.SwerveDriveKinematics.MAX_VELOCITY * 0.1) // 设置移动死区
+      .withRotationalDeadband(Constants.SwerveDriveKinematics.MAX_ANGULAR_VELOCITY * 0.1); // 设置旋转死区
 
   public TeleopDriveNextCommand(Supplier<Controls.DriveInputs> driveInputsSupplier) {
     this.driveInputsSupplier = driveInputsSupplier;
     addRequirements(swerve);
+    
+    // 配置角度保持PID参数 - 使用与Constants.SwerveNext.HeadingController相同的参数
+    facingAngle.HeadingController.setPID(3.0, 0.0, 0.01);
+    facingAngle.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
@@ -38,6 +56,10 @@ public class TeleopDriveNextCommand extends Command {
     Controls.DriveInputs inputs = driveInputsSupplier.get();
     if (Robot.getInstance().isRedAlliance())
       inputs = inputs.redFlipped();
+
+    // 检测旋转输入 - Controls.java已经处理了死区，所以直接检查是否接近零
+    double rotationInput = inputs.getRotation();
+    boolean isRotating = Math.abs(rotationInput) > inputs.getDeadzone();
 
     if (inputs.isNonZero()) {
       inputs =
@@ -48,6 +70,13 @@ public class TeleopDriveNextCommand extends Command {
               inputs.getDeadzone(),
               Controls.AlignMode.None); // if drive inputs non-zero, don't do align
     }
+    
+    // 如果从旋转状态变为非旋转状态，记录当前角度作为目标角度
+    if (wasRotating && !isRotating) {
+      lastTargetAngle = swerve.getEstimatedPose().getRotation();
+    }
+    wasRotating = isRotating;
+
     if (inputs.getAlignMode() != previousAlignMode) {
       xPID.reset();
       yPID.reset();
@@ -57,11 +86,39 @@ public class TeleopDriveNextCommand extends Command {
 
     swerve.setIsAligned(false); // default to false, override later
 
-    ChassisSpeeds speeds;
+    // 根据控制模式选择合适的swerve request
     if (inputs.getAlignMode() == Controls.AlignMode.None) {
-      speeds = chassisSpeedsFromDriveInputs(inputs);
+      // 普通驾驶模式：根据是否有旋转输入选择控制方式
+      if (isRotating) {
+        // 有旋转输入：使用普通的场地中心控制
+        ChassisSpeeds speeds = chassisSpeedsFromDriveInputs(inputs);
+        swerve.setControl(
+            fieldCentric
+                .withVelocityX(speeds.vxMetersPerSecond)
+                .withVelocityY(speeds.vyMetersPerSecond)
+                .withRotationalRate(speeds.omegaRadiansPerSecond));
+      } else {
+        // 无旋转输入：使用角度保持控制
+        ChassisSpeeds speeds = chassisSpeedsFromDriveInputs(inputs);
+        if (lastTargetAngle != null) {
+          swerve.setControl(
+              facingAngle
+                  .withVelocityX(speeds.vxMetersPerSecond)
+                  .withVelocityY(speeds.vyMetersPerSecond)
+                  .withTargetDirection(lastTargetAngle));
+        } else {
+          // 如果还没有记录过角度，就使用当前角度
+          lastTargetAngle = swerve.getEstimatedPose().getRotation();
+          swerve.setControl(
+              facingAngle
+                  .withVelocityX(speeds.vxMetersPerSecond)
+                  .withVelocityY(speeds.vyMetersPerSecond)
+                  .withTargetDirection(lastTargetAngle));
+        }
+      }
     } else if (inputs.getAlignMode() == Controls.AlignMode.BargeAlign) {
-      speeds =
+      // Barge对齐模式
+      ChassisSpeeds speeds =
           new ChassisSpeeds(
               fixBargeTranslationInput(
                   xPID.calculate(
@@ -89,7 +146,14 @@ public class TeleopDriveNextCommand extends Command {
                 < Math.abs(-Math.PI / 2 - swerve.getEstimatedPose().getRotation().getRadians())
                 ? Math.PI / 2
                 : -Math.PI / 2));
+
+      swerve.setControl(
+          new SwerveRequest.FieldCentric()
+              .withVelocityX(speeds.vxMetersPerSecond)
+              .withVelocityY(speeds.vyMetersPerSecond)
+              .withRotationalRate(speeds.omegaRadiansPerSecond));
     } else {
+      // 其他对齐模式
       Pose2d pose = null;
       switch (inputs.getAlignMode()) {
         case TroughAlign:
@@ -113,10 +177,15 @@ public class TeleopDriveNextCommand extends Command {
       }
 
       if (pose == null) {
-        speeds = chassisSpeedsFromDriveInputs(inputs);
+        ChassisSpeeds speeds = chassisSpeedsFromDriveInputs(inputs);
+        swerve.setControl(
+            new SwerveRequest.FieldCentric()
+                .withVelocityX(speeds.vxMetersPerSecond)
+                .withVelocityY(speeds.vyMetersPerSecond)
+                .withRotationalRate(speeds.omegaRadiansPerSecond));
       } else {
         swerve.setIsAligned(swerve.getWithinTolerance(pose.getTranslation()));
-        speeds =
+        ChassisSpeeds speeds =
             new ChassisSpeeds(
                 fixTranslationInput(xPID.calculate(swerve.getEstimatedPose().getX(), pose.getX())),
                 fixTranslationInput(yPID.calculate(swerve.getEstimatedPose().getY(), pose.getY())),
@@ -124,14 +193,14 @@ public class TeleopDriveNextCommand extends Command {
                     turnPID.calculate(
                         swerve.getEstimatedPose().getRotation().getRadians(),
                         pose.getRotation().getRadians())));
+
+        swerve.setControl(
+            new SwerveRequest.FieldCentric()
+                .withVelocityX(speeds.vxMetersPerSecond)
+                .withVelocityY(speeds.vyMetersPerSecond)
+                .withRotationalRate(speeds.omegaRadiansPerSecond));
       }
     }
-
-    swerve.setControl(
-        new SwerveRequest.FieldCentric()
-            .withVelocityX(speeds.vxMetersPerSecond)
-            .withVelocityY(speeds.vyMetersPerSecond)
-            .withRotationalRate(speeds.omegaRadiansPerSecond));
   }
 
   private double fixRotationInput(double n) {
@@ -189,6 +258,7 @@ public class TeleopDriveNextCommand extends Command {
       }
       return new double[] {};
     }, null);
+    builder.addDoubleProperty("Target Angle", () -> lastTargetAngle != null ? lastTargetAngle.getDegrees() : 0.0, null);
 
 
     // Use LogManager to register PID controllers
