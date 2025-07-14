@@ -16,10 +16,8 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,7 +32,6 @@ import org.chillout1778.Constants;
 import org.chillout1778.LogManager;
 import org.chillout1778.Robot;
 
-/** 扩展 Phoenix 6 SwerveDrivetrain 类并实现 Subsystem 接口的类， 使其可以在基于命令的项目中轻松使用。 集成了原 Swerve.java 的业务逻辑。 */
 public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> implements Subsystem {
   private static SwerveNext instance;
 
@@ -60,10 +57,6 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
   private static final double kSimLoopPeriod = 0.005; // 5毫秒
   private volatile Notifier m_simNotifier = null;
   private double m_lastSimTime;
-
-  private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
-  private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
-  private boolean m_hasAppliedOperatorPerspective = false;
 
   private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds =
       new SwerveRequest.ApplyRobotSpeeds()
@@ -305,17 +298,6 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
     } else {
       return x > Constants.Field.RED_BARGE_SCORING_X - BARGE_SCORING_POSITION_TOLERANCE
           && x < Constants.Field.RED_BARGE_SCORING_X + BARGE_SCORING_POSITION_TOLERANCE;
-    }
-  }
-
-  @Override
-  public void periodic() {
-    if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
-      setOperatorPerspectiveForward(
-          Robot.getInstance().isRedAlliance()
-              ? kRedAlliancePerspectiveRotation
-              : kBlueAlliancePerspectiveRotation);
-      m_hasAppliedOperatorPerspective = true;
     }
   }
 

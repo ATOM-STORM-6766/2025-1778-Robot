@@ -36,7 +36,10 @@ public class TeleopDriveNextCommand extends Command {
   @Override
   public void execute() {
     Controls.DriveInputs inputs = driveInputsSupplier.get();
-    if (inputs.isNonZero()) { // Simplified: always disable align if driver is giving input
+    if (Robot.getInstance().isRedAlliance())
+      inputs = inputs.redFlipped();
+
+    if (inputs.isNonZero()) {
       inputs =
           new Controls.DriveInputs(
               inputs.getForward(),

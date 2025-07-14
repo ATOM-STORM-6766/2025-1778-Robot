@@ -10,7 +10,6 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
@@ -275,8 +274,8 @@ public class Constants {
   public static class Elevator {
     public static final double SPOOL_RADIUS = Units.inchesToMeters(0.75);
     public static final double GEAR_RATIO = 4.0;
-    public static final double ZERO_VOLTAGE = -0.05;
-    public static final double ZERO_MIN_CURRENT = 0.1; // amps
+    public static final double ZERO_VOLTAGE = -0.2;
+    public static final double ZERO_MIN_CURRENT = 0.5; // amps
     public static final double SETPOINT_THRESHOLD = 0.01;
     public static final double LAZIER_SETPOINT_THRESHOLD = 0.03;
     public static final double COLLISION_AVOIDANCE_MARGIN = 1.0;
@@ -293,8 +292,8 @@ public class Constants {
       config.Slot0.kA = 0.0;
       config.Slot0.kG = 0.37;
       config.Slot0.kP = 70.0;
-      config.MotionMagic.MotionMagicAcceleration = 7.0; // reduced from 14.0 to 10.0
-      config.MotionMagic.MotionMagicCruiseVelocity = 1.5; // reduced from 3.0 to 2.5
+      config.MotionMagic.MotionMagicAcceleration = 10.5;
+      config.MotionMagic.MotionMagicCruiseVelocity = 2.25;
       return config;
     }
 
@@ -333,8 +332,8 @@ public class Constants {
       config.Slot0.kG = 0.0;
       config.Slot0.kP = 80.0; // volts per rotation
       config.MotionMagic.MotionMagicJerk = 9999.0;
-      config.MotionMagic.MotionMagicAcceleration = 2.0; // reduced from 4.5 to 3.0
-      config.MotionMagic.MotionMagicCruiseVelocity = 1.0; // reduced from 2.0 to 1.5 rps
+      config.MotionMagic.MotionMagicAcceleration = 3.375;
+      config.MotionMagic.MotionMagicCruiseVelocity = 1.5; // reduced from 2.0 to 1.5 rps
       config.CurrentLimits.StatorCurrentLimit = 70.0;
       config.CurrentLimits.SupplyCurrentLimit = 50.0;
       return config;
@@ -428,7 +427,7 @@ public class Constants {
 
     // 在 12V 输出电压下的理论最大速度（m/s）；
     // 这需要根据您的具体机器人进行调整
-    public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(0.5);
+    public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.5);
 
     // 方位每旋转 1 圈会导致驱动电机转动 kCoupleRatio 圈；
     // 这可能需要根据您的具体机器人进行调整
@@ -591,16 +590,16 @@ public class Constants {
     public static final double XY_DISTANCE = Units.inchesToMeters(13.393747);
 
     // How fast the robot can move in a straight line (meters/sec).
-    public static final double MAX_VELOCITY = 0.5;
+    public static final double MAX_VELOCITY = 4.5;
 
     // How fast the robot can rotate (radians/sec).
-    public static final double MAX_ANGULAR_VELOCITY = 3;
+    public static final double MAX_ANGULAR_VELOCITY = 2.5;
 
     // Alignment constants
-    public static final double maxAlignTranslationSpeed = 0.5;
-    public static final double maxAlignRotationSpeed = 0.5;
-    public static final double maxBargeAlignTranslationSpeed = 0.5;
-    public static final double maxBargeAlignRotationSpeed = 0.5;
+    public static final double maxAlignTranslationSpeed = 1.5;
+    public static final double maxAlignRotationSpeed = 2.5;
+    public static final double maxBargeAlignTranslationSpeed = 1.5;
+    public static final double maxBargeAlignRotationSpeed = 1.5;
     public static final double MAX_NODE_DISTANCE = 3.0; // meters
 
     public static final double ALIGN_ANGLE_WEIGHT = 2.7;
@@ -608,32 +607,24 @@ public class Constants {
     public static final double ALREADY_SCORED_BADNESS =
         0.5 + Units.inchesToMeters(12.9375) * ALIGN_TRANSLATION_WEIGHT * (1 - 2 * 0.3);
 
-    public static SimpleMotorFeedforward makeDriveFeedforward() {
-      return new SimpleMotorFeedforward(0.2199442, 2.18943902193, 0.0);
-    }
-
     public static PIDController makeAlignTurnPID() {
-      PIDController pid = new PIDController(1.05, 0.0, 0.1);
+      PIDController pid = new PIDController(5, 0.0, 0.01);
       pid.enableContinuousInput(-Math.PI, Math.PI);
       return pid;
     }
 
     public static PIDController makeAutoTurnPID() {
-      PIDController pid = new PIDController(1.05, 0.0, 0.1);
+      PIDController pid = new PIDController(5, 0.0, 0.0);
       pid.enableContinuousInput(-Math.PI, Math.PI);
       return pid;
     }
 
     public static PIDController makeAutoDrivePID() {
-      return new PIDController(0.95, 0.0, 0.0);
+      return new PIDController(12, 0.0, 0.0);
     }
 
     public static PIDController makeAlignDrivePID() {
-      return new PIDController(0.95, 0.0, 0.0);
-    }
-
-    public static PIDController makeBargeAlignDrivePID() {
-      return new PIDController(0.95, 0.0, 0.0);
+      return new PIDController(6, 0.0, 0.04);
     }
   }
 

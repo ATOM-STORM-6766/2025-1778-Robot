@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import java.util.Arrays;
 import org.chillout1778.commands.AutoRunnerCommand;
+import org.chillout1778.commands.AutoRunnerTesterCommand;
 import org.chillout1778.commands.TeleopDriveNextCommand;
 import org.chillout1778.commands.TeleopSuperstructureCommand;
 import org.chillout1778.subsystems.*;
@@ -48,6 +49,8 @@ public class Robot extends TimedRobot {
 
   private final SendableChooser<Trajectory<SwerveSample>> autoChooser = new SendableChooser<>();
 
+  private final TeleopDriveNextCommand teleopDriveNextCommand = new TeleopDriveNextCommand(Controls::driverInputs);
+
   private Robot() {
     // This code tells FMS that we use Kotlin (so that we are part of the
     // end-of-year statistics on which languages people use).
@@ -75,6 +78,8 @@ public class Robot extends TimedRobot {
     LogManager.registerSubsystem(Intake.getInstance());
     LogManager.registerSubsystem(Superstructure.getInstance());
     LogManager.registerSubsystem(Vision.getInstance());
+
+    LogManager.registerCommand("Teleop Drive Next", teleopDriveNextCommand);
 
     for (String trajectoryName :
         Arrays.stream(Choreo.availableTrajectories())
@@ -181,9 +186,6 @@ public class Robot extends TimedRobot {
       // The new SwerveNext subsystem handles alliance perspective automatically.
     }
 
-    TeleopDriveNextCommand teleopDriveNextCommand = new TeleopDriveNextCommand(Controls::driverInputs);
-    LogManager.registerCommand("Teleop Drive Next", teleopDriveNextCommand);
-    
     Superstructure.getInstance().makeZeroAllSubsystemsCommand().schedule();
     SwerveNext.getInstance().setDefaultCommand(teleopDriveNextCommand);
     Superstructure.getInstance().setDefaultCommand(new TeleopSuperstructureCommand());
