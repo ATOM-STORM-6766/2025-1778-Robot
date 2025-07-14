@@ -50,11 +50,10 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
     return instance;
   }
 
-  // Alignment and Scoring Logic from Swerve.java
   private boolean isAligned = false;
-  private final PIDController xController = new PIDController(6.0, 0.0, 0.0);
-  private final PIDController yController = new PIDController(6.0, 0.0, 0.0);
-  private final PIDController headingController = new PIDController(5.0, 0.0, 0.0);
+  private final PIDController xController = Constants.SwerveDriveKinematics.makeAutoDrivePID();
+  private final PIDController yController = Constants.SwerveDriveKinematics.makeAutoDrivePID();
+  private final PIDController headingController = Constants.SwerveDriveKinematics.makeAutoTurnPID();
   private final boolean[] probablyScoredPoses = new boolean[24 * 4];
 
   private static final double kSimLoopPeriod = 0.005; // 5毫秒

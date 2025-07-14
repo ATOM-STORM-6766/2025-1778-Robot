@@ -20,7 +20,6 @@ public class AutoRunnerTesterCommand extends Command {
 
   @Override
   public void initialize() {
-    System.out.println("[AutoRunnerTesterCommand] INITIALIZING");
     timer.restart();
     Pose2d initialPose = trajectory.getInitialPose(Robot.getInstance().isRedAlliance()).get();
     if (SwerveNext.getInstance()
@@ -28,11 +27,7 @@ public class AutoRunnerTesterCommand extends Command {
             .getTranslation()
             .getDistance(initialPose.getTranslation())
         > Constants.SwerveDriveKinematics.STARTING_TOLERANCE) {
-      System.out.println("[AutoRunnerTesterCommand] Setting initial pose to: " + initialPose);
       SwerveNext.getInstance().setEstimatedPose(initialPose);
-    } else {
-      System.out.println(
-          "[AutoRunnerTesterCommand] Robot pose is already within tolerance. Not resetting.");
     }
   }
 
@@ -52,11 +47,6 @@ public class AutoRunnerTesterCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    System.out.println(
-        "[AutoRunnerTesterCommand] END. Interrupted: "
-            + interrupted
-            + ". Final time: "
-            + timer.get());
     SwerveNext.getInstance().stop();
     timer.stop();
   }

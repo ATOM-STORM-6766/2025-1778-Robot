@@ -581,7 +581,10 @@ public class Constants {
   }
 
   public static class SwerveDriveKinematics {
-    public static final double ALIGNMENT_TOLERANCE = 0.10;
+    // 辅助对位时当前位置和目标位置允许的误差距离（m）
+    public static final double ALIGNMENT_TOLERANCE = 0.04;
+
+    // 机器人出发时位置与自动路径标注的位置允许误差距离（m）
     public static final double STARTING_TOLERANCE = 0.15;
 
     // How far the swerve modules are from (0,0).
@@ -605,13 +608,6 @@ public class Constants {
     public static final double ALREADY_SCORED_BADNESS =
         0.5 + Units.inchesToMeters(12.9375) * ALIGN_TRANSLATION_WEIGHT * (1 - 2 * 0.3);
 
-    // PID Controllers factory methods
-    public static PIDController makeTurnPID() {
-      PIDController pid = new PIDController(7.0, 0.0, 0.01);
-      pid.enableContinuousInput(-Math.PI, Math.PI);
-      return pid;
-    }
-
     public static SimpleMotorFeedforward makeDriveFeedforward() {
       return new SimpleMotorFeedforward(0.2199442, 2.18943902193, 0.0);
     }
@@ -620,6 +616,16 @@ public class Constants {
       PIDController pid = new PIDController(1.05, 0.0, 0.1);
       pid.enableContinuousInput(-Math.PI, Math.PI);
       return pid;
+    }
+
+    public static PIDController makeAutoTurnPID() {
+      PIDController pid = new PIDController(1.05, 0.0, 0.1);
+      pid.enableContinuousInput(-Math.PI, Math.PI);
+      return pid;
+    }
+
+    public static PIDController makeAutoDrivePID() {
+      return new PIDController(0.95, 0.0, 0.0);
     }
 
     public static PIDController makeAlignDrivePID() {
