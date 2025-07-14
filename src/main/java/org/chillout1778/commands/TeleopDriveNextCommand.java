@@ -59,7 +59,8 @@ public class TeleopDriveNextCommand extends Command {
 
     // 检测旋转输入 - Controls.java已经处理了死区，所以直接检查是否接近零
     double rotationInput = inputs.getRotation();
-    boolean isRotating = Math.abs(rotationInput) > inputs.getDeadzone();
+    // Align 模式也视为旋转输入
+    boolean isRotating = Math.abs(rotationInput) > inputs.getDeadzone() || inputs.getAlignMode() != Controls.AlignMode.None;
 
     if (inputs.isNonZero()) {
       inputs =
