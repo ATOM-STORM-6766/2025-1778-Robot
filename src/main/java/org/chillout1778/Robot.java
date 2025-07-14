@@ -7,7 +7,6 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -71,12 +70,11 @@ public class Robot extends TimedRobot {
     Vision.getInstance();
     Lights.getInstance();
 
-    Shuffleboard.getTab("Subsystems").add(Arm.getInstance());
-    Shuffleboard.getTab("Subsystems").add(Elevator.getInstance());
-    Shuffleboard.getTab("Subsystems").add(Intake.getInstance());
-    Shuffleboard.getTab("Subsystems").add(Superstructure.getInstance());
-    Shuffleboard.getTab("Subsystems").add(Vision.getInstance());
-    // Shuffleboard.getTab("Subsystems").add(SwerveNext.getInstance());
+    LogManager.registerSubsystem(Arm.getInstance());
+    LogManager.registerSubsystem(Elevator.getInstance());
+    LogManager.registerSubsystem(Intake.getInstance());
+    LogManager.registerSubsystem(Superstructure.getInstance());
+    LogManager.registerSubsystem(Vision.getInstance());
 
     for (String trajectoryName :
         Arrays.stream(Choreo.availableTrajectories())
@@ -92,7 +90,8 @@ public class Robot extends TimedRobot {
           initializeAutonomousCommand();
         });
 
-    Shuffleboard.getTab("Robot").add(autoChooser);
+    // Use LogManager to register auto chooser
+    LogManager.registerToRobotTab("Auto Chooser", autoChooser);
   }
 
   public long tickNumber = 0;
@@ -127,8 +126,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    // boolean pressed = !enableCoastModeSwitch.get();
-    boolean pressed = true;
+    boolean pressed = !enableCoastModeSwitch.get();
     if (!wasCoastModeEnabled && pressed) { // rising edge
       Elevator.getInstance().setCoastEnabled(true);
       Arm.getInstance().setCoastEnabled(true);
@@ -182,8 +180,12 @@ public class Robot extends TimedRobot {
     if (!didAutoRun) {
       // The new SwerveNext subsystem handles alliance perspective automatically.
     }
+
+    TeleopDriveNextCommand teleopDriveNextCommand = new TeleopDriveNextCommand(Controls::driverInputs);
+    LogManager.registerCommand("Teleop Drive Next", teleopDriveNextCommand);
+    
     Superstructure.getInstance().makeZeroAllSubsystemsCommand().schedule();
-    SwerveNext.getInstance().setDefaultCommand(new TeleopDriveNextCommand(Controls::driverInputs));
+    SwerveNext.getInstance().setDefaultCommand(teleopDriveNextCommand);
     Superstructure.getInstance().setDefaultCommand(new TeleopSuperstructureCommand());
   }
 

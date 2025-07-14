@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import org.chillout1778.Constants;
+import org.chillout1778.LogManager;
 import org.chillout1778.Robot;
 
 /** 扩展 Phoenix 6 SwerveDrivetrain 类并实现 Subsystem 接口的类， 使其可以在基于命令的项目中轻松使用。 集成了原 Swerve.java 的业务逻辑。 */
@@ -117,6 +118,11 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
       SwerveDrivetrainConstants drivetrainConstants, SwerveModuleConstants<?, ?, ?>... modules) {
     super(TalonFX::new, TalonFX::new, CANcoder::new, drivetrainConstants, modules);
     headingController.enableContinuousInput(-Math.PI, Math.PI);
+
+    // Use LogManager to register PID controllers
+    LogManager.registerPIDController("Swerve X Controller", xController);
+    LogManager.registerPIDController("Swerve Y Controller", yController);
+    LogManager.registerPIDController("Swerve Heading Controller", headingController);
   }
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
@@ -166,7 +172,7 @@ public class SwerveNext extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> imp
             yController.calculate(currentPose.getY(), goalPose.getY()),
             headingController.calculate(
                 currentPose.getRotation().getRadians(), goalPose.getRotation().getRadians()));
-    
+
     this.setControl(
         new SwerveRequest.FieldCentric()
             .withVelocityX(speeds.vxMetersPerSecond)

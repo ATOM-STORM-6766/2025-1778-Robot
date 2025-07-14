@@ -10,6 +10,13 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Pose": "Field2d",
+      "/Shuffleboard/PID Controllers/Swerve Heading Controller": "PIDController",
+      "/Shuffleboard/PID Controllers/Swerve X Controller": "PIDController",
+      "/Shuffleboard/PID Controllers/Swerve Y Controller": "PIDController",
+      "/Shuffleboard/PID Controllers/Teleop Align Turn PID": "PIDController",
+      "/Shuffleboard/PID Controllers/Teleop Align X PID": "PIDController",
+      "/Shuffleboard/PID Controllers/Teleop Align Y PID": "PIDController",
+      "/Shuffleboard/Robot/Auto Chooser": "String Chooser",
       "/Shuffleboard/Robot/SendableChooser[0]": "String Chooser",
       "/Shuffleboard/Subsystems/Superstructure": "Subsystem",
       "/Shuffleboard/Swerve/Swerve Estimated Pose Field": "Field2d",
@@ -33,20 +40,7 @@
         "left": 534,
         "right": 3466,
         "top": 291,
-        "width": 17.54825210571289,
-        "window": {
-          "visible": true
-        }
-      },
-      "/Shuffleboard/Robot/SendableChooser[0]": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Teleop Align/turnPID": {
-        "window": {
-          "visible": true
-        }
+        "width": 17.54825210571289
       }
     }
   },

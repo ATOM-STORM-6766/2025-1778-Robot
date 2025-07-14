@@ -3,12 +3,14 @@ package org.chillout1778.commands;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.Supplier;
 import org.chillout1778.Constants;
 import org.chillout1778.Controls;
+import org.chillout1778.LogManager;
 import org.chillout1778.Robot;
 import org.chillout1778.Utils;
 import org.chillout1778.subsystems.SwerveNext;
@@ -24,13 +26,11 @@ public class TeleopDriveNextCommand extends Command {
   private final PIDController yPID = Constants.SwerveDriveKinematics.makeAlignDrivePID();
   private final PIDController turnPID = Constants.SwerveDriveKinematics.makeAlignTurnPID();
 
-  private final Debugger debugger;
+  private Pose2d lastTargetPose = null;
 
   public TeleopDriveNextCommand(Supplier<Controls.DriveInputs> driveInputsSupplier) {
     this.driveInputsSupplier = driveInputsSupplier;
     addRequirements(swerve);
-    debugger = new Debugger(xPID, yPID, turnPID);
-    debugger.init();
   }
 
   @Override
@@ -76,11 +76,22 @@ public class TeleopDriveNextCommand extends Command {
                                       - swerve.getEstimatedPose().getRotation().getRadians())
                           ? Math.PI / 2
                           : -Math.PI / 2)));
+
+        lastTargetPose = new Pose2d(
+            Robot.getInstance().isOnRedSide()
+                ? Constants.Field.FIELD_X_SIZE - Constants.Field.BLUE_BARGE_SCORING_X
+                : Constants.Field.BLUE_BARGE_SCORING_X,
+            swerve.getEstimatedPose().getY(),
+            new Rotation2d(Math.abs(Math.PI / 2 - swerve.getEstimatedPose().getRotation().getRadians())
+                < Math.abs(-Math.PI / 2 - swerve.getEstimatedPose().getRotation().getRadians())
+                ? Math.PI / 2
+                : -Math.PI / 2));
     } else {
       Pose2d pose = null;
       switch (inputs.getAlignMode()) {
         case TroughAlign:
           pose = swerve.getClosestTroughScoringPose().orElse(null);
+          lastTargetPose = pose;
           break;
         case ReefAlign:
           pose =
@@ -88,15 +99,15 @@ public class TeleopDriveNextCommand extends Command {
                   .getClosestFudgedScoringPose()
                   .map(SwerveNext.IndexedPose2d::getPose)
                   .orElse(null);
+          lastTargetPose = pose;
           break;
         case AlgaeAlign:
           pose = swerve.getClosestAlgaeGrabPose().orElse(null);
+          lastTargetPose = pose;
           break;
         default:
           break;
       }
-
-      debugger.logPose(pose);
 
       if (pose == null) {
         speeds = chassisSpeedsFromDriveInputs(inputs);
@@ -163,31 +174,23 @@ public class TeleopDriveNextCommand extends Command {
     return new ChassisSpeeds(actualX, actualY, actualRotation);
   }
 
-  private static class Debugger {
-    private final PIDController xpid;
-    private final PIDController ypid;
-    private final PIDController turnpid;
-
-    Debugger(PIDController xpid, PIDController ypid, PIDController turnpid) {
-      this.xpid = xpid;
-      this.ypid = ypid;
-      this.turnpid = turnpid;
-    }
-
-    void init() {
-      SmartDashboard.putData("Teleop Align/xPID", xpid);
-      SmartDashboard.putData("Teleop Align/yPID", ypid);
-      SmartDashboard.putData("Teleop Align/turnPID", turnpid);
-    }
-
-    void logPose(Pose2d pose) {
-      if (pose != null) {
-        SmartDashboard.putNumberArray(
-            "Teleop Align/Target Pose",
-            new double[] {pose.getX(), pose.getY(), pose.getRotation().getRadians()});
-      } else {
-        SmartDashboard.putNumberArray("Teleop Align/Target Pose", new double[] {});
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType("TeleopDriveNextCommand");
+    builder.addStringProperty(
+        "Align Mode", () -> driveInputsSupplier.get().getAlignMode().toString(), null);
+    builder.addBooleanProperty("Is Aligned", () -> swerve.getIsAligned(), null);
+    builder.addDoubleArrayProperty("Target Pose", () -> {
+      if (lastTargetPose != null) {
+        return new double[] {lastTargetPose.getX(), lastTargetPose.getY(), lastTargetPose.getRotation().getRadians()};
       }
-    }
+      return new double[] {};
+    }, null);
+
+
+    // Use LogManager to register PID controllers
+    LogManager.registerPIDController("Teleop Align X PID", xPID);
+    LogManager.registerPIDController("Teleop Align Y PID", yPID);
+    LogManager.registerPIDController("Teleop Align Turn PID", turnPID);
   }
 }
