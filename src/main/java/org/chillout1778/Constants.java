@@ -348,8 +348,10 @@ public class Constants {
     public static TalonFXConfiguration getRollerConfig() {
       TalonFXConfiguration config = new TalonFXConfiguration();
       config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-      config.CurrentLimits.StatorCurrentLimit = 50.0;
+      config.CurrentLimits.StatorCurrentLimit = 70.0;
+      config.CurrentLimits.SupplyCurrentLimit = 50.0;
       config.CurrentLimits.StatorCurrentLimitEnable = true;
+      config.CurrentLimits.SupplyCurrentLimitEnable = true;
       config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
       return config;
     }
