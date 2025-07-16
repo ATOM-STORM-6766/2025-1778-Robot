@@ -79,12 +79,12 @@ public class Superstructure extends SubsystemBase {
     PrepareL4(Elevator.State.L4, Arm.PivotState.AboveScoreCoral, Arm.RollerState.Idle),
     StartL4(Elevator.State.L4, Arm.PivotState.L4ScoreCoral, Arm.RollerState.SlowIdle),
     PlaceL4(Elevator.State.ScoreL4, Arm.PivotState.L4FinishScoreCoral, Arm.RollerState.SlowOut),
-    AfterL4(Elevator.State.PreHandoff, Arm.PivotState.Down, Arm.RollerState.Out),
+    AfterL4(Elevator.State.PreHandoff, Arm.PivotState.Down, Arm.RollerState.SlowOut),
 
     PrepareL3(Elevator.State.L3, Arm.PivotState.AboveScoreCoral, Arm.RollerState.Idle),
     StartL3(Elevator.State.L3, Arm.PivotState.ScoreCoral, Arm.RollerState.SlowIdle),
     PlaceL3(Elevator.State.ScoreL3, Arm.PivotState.FinishScoreCoral, Arm.RollerState.SlowOut),
-    AfterL3(Elevator.State.PostL3, Arm.PivotState.Up, Arm.RollerState.Out),
+    AfterL3(Elevator.State.PostL3, Arm.PivotState.Up, Arm.RollerState.SlowOut),
 
     PrepareL2(Elevator.State.L2, Arm.PivotState.AboveScoreCoral, Arm.RollerState.Idle),
     StartL2(Elevator.State.L2, Arm.PivotState.ScoreCoral, Arm.RollerState.SlowIdle),

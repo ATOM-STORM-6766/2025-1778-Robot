@@ -9,7 +9,6 @@ import org.chillout1778.subsystems.Superstructure;
 public class Controls {
   private static final CommandGenericHID driverController = new CommandGenericHID(0);
   public static final CommandPS5Controller operatorController = new CommandPS5Controller(1);
-  private static final CommandGenericHID testController = new CommandGenericHID(2);
 
   public enum AlignMode {
     None,
@@ -75,8 +74,8 @@ public class Controls {
         -driverController.getRawAxis(1),
         -driverController.getRawAxis(0),
         -driverController.getRawAxis(4),
-        0.05,
-        Robot.isSimulation() ? getDriverTestAlignMode() : getDriverAlignMode());
+        0.08,
+        getDriverAlignMode());
   }
 
   public static DriveInputs operatorInputs() {
@@ -86,25 +85,6 @@ public class Controls {
         -operatorController.getHID().getRightX(),
         0.1,
         getOperatorAlignMode());
-  }
-
-  private static AlignMode getDriverTestAlignMode() {
-    if (testController.getHID().getRawButton(1)) {
-      return AlignMode.ReefAlign;
-    }
-    if (testController.getHID().getRawButton(2)) {
-      return AlignMode.TroughAlign;
-    }
-    if (testController.getHID().getRawButton(3)) {
-      return AlignMode.AlgaeAlign;
-    }
-    if (testController.getHID().getRawButton(4)) {
-      return AlignMode.BargeAlign;
-    }
-    if (testController.getHID().getRawButton(5)) {
-      return AlignMode.None;
-    }
-    return AlignMode.None;
   }
 
   private static AlignMode getDriverAlignMode() {
@@ -185,11 +165,12 @@ public class Controls {
     }
     lastScoringLevel = level;
     return new Superstructure.SuperstructureInputs(
-        operatorController.getHID().getL2Button(), // wantExtend
+        (driverController.getHID().getRawButton(5)
+            || operatorController.getHID().getL2Button()), // wantExtend
         driverController.getRawAxis(3) > 0.5, // wantGroundIntake
         operatorController.getHID().getCrossButton(), // wantArmSourceIntake
         operatorController.getHID().getSquareButton(), // wantSourceIntake
-        (driverController.getRawAxis(4) > .5
+        (driverController.getHID().getRawButton(6)
             || operatorController.getHID().getR3Button()), // wantScore
         level, // wantedScoringLevel
         operatorController.getHID().getR1Button(), // wantGetAlgae

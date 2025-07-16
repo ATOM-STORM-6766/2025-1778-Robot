@@ -173,7 +173,8 @@ public class Elevator extends SubsystemBase {
     if (!isZeroed || !Arm.getInstance().getIsZeroed()) {
       return;
     }
-    mainMotor.setControl(new MotionMagicVoltage(clampSetpoint(state.getExtension())));
+    mainMotor.setControl(
+        new MotionMagicVoltage(clampSetpoint(state.getExtension())).withEnableFOC(true));
   }
 
   public enum AlgaeHeight {

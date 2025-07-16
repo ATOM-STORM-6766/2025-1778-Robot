@@ -294,6 +294,10 @@ public class Constants {
       config.Slot0.kP = 70.0;
       config.MotionMagic.MotionMagicAcceleration = 10.5;
       config.MotionMagic.MotionMagicCruiseVelocity = 2.25;
+      config.CurrentLimits.StatorCurrentLimit = 70.0;
+      config.CurrentLimits.SupplyCurrentLimit = 50.0;
+      config.CurrentLimits.StatorCurrentLimitEnable = true;
+      config.CurrentLimits.SupplyCurrentLimitEnable = true;
       return config;
     }
 
@@ -311,15 +315,15 @@ public class Constants {
     public static final double PIVOT_ENCODER_RATIO =
         (36.0 / 16.0) * (36.0 / 16.0) * (60.0 / 24.0) * (12.0 / 54.0);
     public static final double PIVOT_GEAR_RATIO = (12.0 / 60.0) * (20.0 / 60.0) * (12.0 / 54.0);
-    public static final double PIVOT_ABS_ENCODER_OFFSET_ENCODER_ROTATIONS = 0.446;
+    public static final double PIVOT_ABS_ENCODER_OFFSET_ENCODER_ROTATIONS = 0.788;
     public static final double CORAL_CENTER_OFFSET = Units.inchesToMeters(9.5);
     public static final double SAFE_DISTANCE_FROM_REEF_CENTER = Units.inchesToMeters(70.0);
     public static final double SAFE_PLACEMENT_DISTANCE = Units.inchesToMeters(60.0);
     public static final double SAFE_BARGE_DISTANCE = Units.inchesToMeters(50.0);
     public static final double SAFE_INSIDE_ROBOT_ANGLE = Math.toRadians(40.0);
     public static final double SETPOINT_THRESHOLD = 0.1;
-    public static final double CURRENT_DRAW = 20.0;
-    public static final double IDLE_CURRENT_DRAW = 10.0;
+    public static final double CURRENT_DRAW = 15.0;
+    public static final double IDLE_CURRENT_DRAW = 5.0;
 
     public static TalonFXConfiguration getPivotConfig() {
       TalonFXConfiguration config = new TalonFXConfiguration();
@@ -333,17 +337,20 @@ public class Constants {
       config.Slot0.kP = 80.0; // volts per rotation
       config.MotionMagic.MotionMagicJerk = 9999.0;
       config.MotionMagic.MotionMagicAcceleration = 3.375;
-      config.MotionMagic.MotionMagicCruiseVelocity = 1.5; // reduced from 2.0 to 1.5 rps
+      config.MotionMagic.MotionMagicCruiseVelocity = 1.5;
       config.CurrentLimits.StatorCurrentLimit = 70.0;
       config.CurrentLimits.SupplyCurrentLimit = 50.0;
+      config.CurrentLimits.StatorCurrentLimitEnable = true;
+      config.CurrentLimits.SupplyCurrentLimitEnable = true;
       return config;
     }
 
     public static TalonFXConfiguration getRollerConfig() {
       TalonFXConfiguration config = new TalonFXConfiguration();
       config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-      config.CurrentLimits.StatorCurrentLimit = 40.0;
+      config.CurrentLimits.StatorCurrentLimit = 50.0;
       config.CurrentLimits.StatorCurrentLimitEnable = true;
+      config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
       return config;
     }
   }
@@ -608,23 +615,23 @@ public class Constants {
         0.5 + Units.inchesToMeters(12.9375) * ALIGN_TRANSLATION_WEIGHT * (1 - 2 * 0.3);
 
     public static PIDController makeAlignTurnPID() {
-      PIDController pid = new PIDController(5, 0.0, 0.01);
+      PIDController pid = new PIDController(2.5, 0.0, 0.01);
       pid.enableContinuousInput(-Math.PI, Math.PI);
       return pid;
     }
 
     public static PIDController makeAutoTurnPID() {
-      PIDController pid = new PIDController(5, 0.0, 0.0);
+      PIDController pid = new PIDController(2.5, 0.0, 0.0);
       pid.enableContinuousInput(-Math.PI, Math.PI);
       return pid;
     }
 
     public static PIDController makeAutoDrivePID() {
-      return new PIDController(12, 0.0, 0.0);
+      return new PIDController(2.5, 0.0, 0.0);
     }
 
     public static PIDController makeAlignDrivePID() {
-      return new PIDController(6, 0.0, 0.04);
+      return new PIDController(2.5, 0.0, 0.04);
     }
   }
 

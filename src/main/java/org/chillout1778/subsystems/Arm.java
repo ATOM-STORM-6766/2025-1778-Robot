@@ -41,7 +41,7 @@ public class Arm extends SubsystemBase {
     Idle(-0.035),
     AlgaeIdle(-0.225),
     In(-1.0),
-    SlowOut(0.5),
+    SlowOut(0.075),
     Out(1.0),
     Descore(0.8);
 
@@ -352,7 +352,7 @@ public class Arm extends SubsystemBase {
   private RollerState rollerState = RollerState.Off;
 
   private boolean isZeroed = false;
-  private final Debouncer coralCurrentDebouncer = new Debouncer(0.15, Debouncer.DebounceType.kBoth);
+  private final Debouncer coralCurrentDebouncer = new Debouncer(0.25, Debouncer.DebounceType.kBoth);
   private final Debouncer algaeCurrentDebouncer = new Debouncer(0.25, Debouncer.DebounceType.kBoth);
   private boolean hasObject = false;
   public final Timer autoTimer = new Timer();
@@ -417,6 +417,7 @@ public class Arm extends SubsystemBase {
 
     armPivotMotor.setControl(
         new MotionMagicVoltage((positionSetpoint - armOffsetRadians) / (2 * Math.PI))
+            .withEnableFOC(true)
             .withFeedForward(gravityFeedforward));
   }
 
@@ -488,5 +489,6 @@ public class Arm extends SubsystemBase {
     builder.addDoubleProperty("roller current", () -> statorCurrentSignal.getValueAsDouble(), null);
     builder.addBooleanProperty("Is Zeroed?", () -> isZeroed, null);
     Utils.addClosedLoopProperties("Arm pivot", armPivotMotor, builder);
+    builder.addStringProperty("Arm roller speed", () -> rollerState.name(), null);
   }
 }
