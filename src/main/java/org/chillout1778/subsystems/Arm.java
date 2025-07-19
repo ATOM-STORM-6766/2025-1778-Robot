@@ -4,6 +4,7 @@ import static org.chillout1778.Constants.Field.BLUE_REEF_CENTER;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
@@ -36,19 +37,19 @@ public class Arm extends SubsystemBase {
 
   public enum RollerState {
     Off(0.0),
-    SlowIdle(-0.035),
-    FastIdle(-0.1),
-    Idle(-0.035),
-    AlgaeIdle(-0.225),
-    In(-1.0),
-    SlowOut(0.075),
-    Out(1.0),
-    Descore(0.8);
+    SlowIdle(-0.42),
+    FastIdle(-1.2),
+    Idle(-0.42),
+    AlgaeIdle(-2.7),
+    In(-12.0),
+    SlowOut(0.9),
+    Out(12.0),
+    Descore(9.6);
 
-    public final double dutyCycle;
+    public final double voltage;
 
-    RollerState(double dutyCycle) {
-      this.dutyCycle = dutyCycle;
+    RollerState(double voltage) {
+      this.voltage = voltage;
     }
   }
 
@@ -410,7 +411,9 @@ public class Arm extends SubsystemBase {
       return;
     }
 
-    rollerMotor.set(atStartOfAuto ? RollerState.FastIdle.dutyCycle : rollerState.dutyCycle);
+    rollerMotor.setControl(
+        new VoltageOut(atStartOfAuto ? RollerState.FastIdle.voltage : rollerState.voltage)
+            .withEnableFOC(true));
 
     double positionSetpoint = getDesiredPosition();
     double gravityFeedforward = Constants.Arm.POSITION_DEPENDENT_KG * Math.sin(getPosition());

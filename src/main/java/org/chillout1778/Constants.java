@@ -348,11 +348,20 @@ public class Constants {
     public static TalonFXConfiguration getRollerConfig() {
       TalonFXConfiguration config = new TalonFXConfiguration();
       config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+      config.MotorOutput.PeakForwardDutyCycle = 1.0;
+      config.MotorOutput.PeakReverseDutyCycle = -1.0;
+
       config.CurrentLimits.StatorCurrentLimit = 70.0;
       config.CurrentLimits.SupplyCurrentLimit = 50.0;
       config.CurrentLimits.StatorCurrentLimitEnable = true;
       config.CurrentLimits.SupplyCurrentLimitEnable = true;
-      config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+      config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 0.0;
+      config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.0;
+      config.OpenLoopRamps.TorqueOpenLoopRampPeriod = 0.0;
+
+      config.Voltage.PeakForwardVoltage = 16.0;
+      config.Voltage.PeakReverseVoltage = -16.0;
       return config;
     }
   }
