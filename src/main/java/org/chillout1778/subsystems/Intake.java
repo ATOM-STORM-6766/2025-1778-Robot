@@ -37,8 +37,8 @@ public class Intake extends SubsystemBase {
   public enum RollerState {
     In(-6.0, -8.0),
     SlowIn(-2.0, -3.0),
-    TroughOut(3.25, 0.0),
-    Out(8.0, 0.0),
+    TroughOut(5.5, 0.0),
+    Out(12.0, 0.0), // 8
     Off(0.0, 0.0),
     AlgaeModeIdle(0.0, 0.0),
     OperatorControl(0.0, 0.0);
@@ -125,7 +125,7 @@ public class Intake extends SubsystemBase {
 
   // Kotlin: val hasCoral get() = !linebreak.get() || Controls.operatorController.hid.touchpadButton
   public boolean hasCoral() {
-    return !(linebreakFoller.get() || linebreak.get()) || Controls.operatorController.getHID().getTouchpadButton();
+    return !(linebreakFoller.get()) || Controls.operatorController.getHID().getTouchpadButton();
   }
 
   // Kotlin: val atSetpoint get() = Math.abs(angle - effectivePivotState.angleSetpoint) <

@@ -30,10 +30,10 @@ public class Elevator extends SubsystemBase {
   public enum State {
     Down(0.0),
     PreHandoff(Units.inchesToMeters(36.0)),
-    Handoff(Units.inchesToMeters(34.5)),
+    Handoff(Units.inchesToMeters(34)),
     SourceIntake(Units.inchesToMeters(53.0)),
     PreScore(Units.inchesToMeters(20.0)),
-    Trough(Units.inchesToMeters(38.0)),
+    Trough(Units.inchesToMeters(40.0)),
     L2(Units.inchesToMeters(15.0)),
     L3(L2.rawExtension + Units.inchesToMeters(15.8701)),
     L4(Units.inchesToMeters(54.5 - 0.125)),

@@ -65,8 +65,8 @@ public class Constants {
     // LED segment indices
     public static final int RIGHT_SEGMENT_START = 0;
     public static final int RIGHT_SEGMENT_END = 19;
-    public static final int CROSS_SEGMENT_START = 20;
-    public static final int CROSS_SEGMENT_END = 39;
+    public static final int CROSS_SEGMENT_START = 0;
+    public static final int CROSS_SEGMENT_END = 59;
     public static final int LEFT_SEGMENT_START = 40;
     public static final int LEFT_SEGMENT_END = 59;
 
@@ -127,7 +127,7 @@ public class Constants {
     /** Branch offset from the center of one of the reef's edges */
     public static final double REEF_BRANCH_OFFSET_DISTANCE = Units.inchesToMeters(12.9375 / 2);
 
-    public static final double TROUGH_OFFSET_DISTANCE = Units.inchesToMeters(14.5 / 2);
+    public static final double TROUGH_OFFSET_DISTANCE = 0.0;  // 0.10 offset to reef
 
     public static final List<Pose2d> blueScoringPoses;
     public static final List<Pose2d> blueTroughScoringPoses;
@@ -322,7 +322,7 @@ public class Constants {
     public static final double SAFE_BARGE_DISTANCE = Units.inchesToMeters(50.0);
     public static final double SAFE_INSIDE_ROBOT_ANGLE = Math.toRadians(40.0);
     public static final double SETPOINT_THRESHOLD = 0.1;
-    public static final double CURRENT_DRAW = 15.0;
+    public static final double CURRENT_DRAW = 10.0;
     public static final double IDLE_CURRENT_DRAW = 5.0;
 
     public static TalonFXConfiguration getPivotConfig() {
@@ -626,23 +626,23 @@ public class Constants {
         0.5 + Units.inchesToMeters(12.9375) * ALIGN_TRANSLATION_WEIGHT * (1 - 2 * 0.3);
 
     public static PIDController makeAlignTurnPID() {
-      PIDController pid = new PIDController(2.5, 0.0, 0.01);
+      PIDController pid = new PIDController(4.0, 0.0, 0.01);
       pid.enableContinuousInput(-Math.PI, Math.PI);
       return pid;
     }
 
     public static PIDController makeAutoTurnPID() {
-      PIDController pid = new PIDController(2.5, 0.0, 0.0);
+      PIDController pid = new PIDController(4.25, 0.0, 0.0);
       pid.enableContinuousInput(-Math.PI, Math.PI);
       return pid;
     }
 
     public static PIDController makeAutoDrivePID() {
-      return new PIDController(2.5, 0.0, 0.0);
+      return new PIDController(5.0, 0.0, 0.0);
     }
 
     public static PIDController makeAlignDrivePID() {
-      return new PIDController(2.5, 0.0, 0.04);
+      return new PIDController(4.5, 0.0, 0.04);
     }
   }
 

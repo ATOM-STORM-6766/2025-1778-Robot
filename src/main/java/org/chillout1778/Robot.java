@@ -69,7 +69,6 @@ public class Robot extends TimedRobot {
     Intake.getInstance();
     Superstructure.getInstance();
     SwerveNext.getInstance().registerTelemetry(logger::telemeterize);
-    ;
     Vision.getInstance();
     Lights.getInstance();
 

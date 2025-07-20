@@ -41,8 +41,8 @@ public class Arm extends SubsystemBase {
     FastIdle(-1.2),
     Idle(-0.42),
     AlgaeIdle(-2.7),
-    In(-12.0),
-    SlowOut(0.9),
+    In(-9.0),
+    SlowOut(1.4),
     Out(12.0),
     Descore(9.6);
 
@@ -354,7 +354,7 @@ public class Arm extends SubsystemBase {
 
   private boolean isZeroed = false;
   private final Debouncer coralCurrentDebouncer = new Debouncer(0.25, Debouncer.DebounceType.kBoth);
-  private final Debouncer algaeCurrentDebouncer = new Debouncer(0.25, Debouncer.DebounceType.kBoth);
+  private final Debouncer algaeCurrentDebouncer = new Debouncer(0.4, Debouncer.DebounceType.kBoth);
   private boolean hasObject = false;
   public final Timer autoTimer = new Timer();
 

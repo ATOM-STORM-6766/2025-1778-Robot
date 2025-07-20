@@ -29,9 +29,9 @@ public class Lights extends SubsystemBase {
   private final AddressableLEDBuffer ledBuff;
 
   // LED segments
-  private final AddressableLEDBufferView rightSegment;
+  // private final AddressableLEDBufferView rightSegment;
   private final AddressableLEDBufferView crossSegment;
-  private final AddressableLEDBufferView leftSegment;
+  // private final AddressableLEDBufferView leftSegment;
 
   private final LEDPattern blackPattern = LEDPattern.solid(Color.kBlack);
   private final Timer lightsTimer = new Timer();
@@ -43,29 +43,29 @@ public class Lights extends SubsystemBase {
 
   private Lights() {
     leds = new AddressableLED(DioIds.ADDRESSABLE_LED);
-    leds.setColorOrder(AddressableLED.ColorOrder.kRGB);
+    // leds.setColorOrder(AddressableLED.ColorOrder.kRGB);
     ledBuff = new AddressableLEDBuffer(Constants.Lights.TOTAL_LENGTH);
 
-    rightSegment =
-        ledBuff.createView(
-            Constants.Lights.RIGHT_SEGMENT_START,
-            Constants.Lights.RIGHT_SEGMENT_END); // right segment
+    // rightSegment =
+    //     ledBuff.createView(
+    //         Constants.Lights.RIGHT_SEGMENT_START,
+    //         Constants.Lights.RIGHT_SEGMENT_END); // right segment
     crossSegment =
         ledBuff.createView(
             Constants.Lights.CROSS_SEGMENT_START,
             Constants.Lights.CROSS_SEGMENT_END); // cross segment
-    leftSegment =
-        ledBuff
-            .createView(Constants.Lights.LEFT_SEGMENT_START, Constants.Lights.LEFT_SEGMENT_END)
-            .reversed(); // left segment
-    ledBuff.createView(
-        Constants.Lights.BATTERY_PROGRESS_START,
-        Constants.Lights.BATTERY_PROGRESS_END); // battery charge progress bar
-    ledBuff
-        .createView(
-            Constants.Lights.BATTERY_PROGRESS_REVERSE_START,
-            Constants.Lights.BATTERY_PROGRESS_REVERSE_END)
-        .reversed();
+    // leftSegment =
+    //     ledBuff
+    //         .createView(Constants.Lights.LEFT_SEGMENT_START, Constants.Lights.LEFT_SEGMENT_END)
+    //         .reversed(); // left segment
+    // ledBuff.createView(
+    //     Constants.Lights.BATTERY_PROGRESS_START,
+    //     Constants.Lights.BATTERY_PROGRESS_END); // battery charge progress bar
+    // ledBuff
+    //     .createView(
+    //         Constants.Lights.BATTERY_PROGRESS_REVERSE_START,
+    //         Constants.Lights.BATTERY_PROGRESS_REVERSE_END)
+    //     .reversed();
 
     lightsTimer.reset();
     lightsTimer.start();
@@ -185,8 +185,7 @@ public class Lights extends SubsystemBase {
 
   public void disabledAnimations() {
     if (Robot.getInstance().getWasEnabledThenDisabled() && lightsTimer.get() <= 5.0) {
-      disabledRainbow.applyTo(rightSegment);
-      disabledRainbow.applyTo(leftSegment);
+
       lightsTimer.restart();
     } else if (Robot.getInstance().getWasEnabledThenDisabled() && lightsTimer.get() > 5.0) {
       Robot.getInstance().setWasEnabledThenDisabled(false);
@@ -199,8 +198,7 @@ public class Lights extends SubsystemBase {
       LEDPattern progressBarPattern =
           LEDPattern.solid(LedColors.LightBlue.color)
               .mask(LEDPattern.progressMaskLayer(() -> progressBarAnimation));
-      progressBarPattern.applyTo(rightSegment);
-      progressBarPattern.applyTo(leftSegment);
+
     } else if (lightsTimer.get() % 10.0 <= 1.0) {
       nuclearRats(2.0, LedColors.TotalBlack, LedColors.LightBlue);
     }
@@ -220,8 +218,6 @@ public class Lights extends SubsystemBase {
             Time.ofBaseUnits(1.0 / frequency, Units.Seconds));
     LEDPattern overlayFinalPattern = overlayCenterMask.overlayOn(overlayCenterFlashed);
 
-    overlayStepsFinal.applyTo(leftSegment);
-    overlayStepsFinal.applyTo(rightSegment);
     if (baseColor != LedColors.TotalBlack) overlayFinalPattern.applyTo(crossSegment);
   }
 
