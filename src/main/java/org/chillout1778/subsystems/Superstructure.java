@@ -335,7 +335,7 @@ public class Superstructure extends SubsystemBase {
   private final List<Transition> transitions = new ArrayList<>();
 
   private Superstructure() {
-     // this just makes it so the elevator doesn't move until the operator wants to intake
+    // this just makes it so the elevator doesn't move until the operator wants to intake
     transitions.add(
         new Transition(
             State.StartPosition,

@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.chillout1778.Constants;
 import org.chillout1778.Controls;
-import org.chillout1778.Utils;
 
 public class Intake extends SubsystemBase {
   private static Intake instance;

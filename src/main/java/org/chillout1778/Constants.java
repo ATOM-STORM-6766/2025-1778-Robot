@@ -127,7 +127,7 @@ public class Constants {
     /** Branch offset from the center of one of the reef's edges */
     public static final double REEF_BRANCH_OFFSET_DISTANCE = Units.inchesToMeters(12.9375 / 2);
 
-    public static final double TROUGH_OFFSET_DISTANCE = 0.0;  // 0.10 offset to reef
+    public static final double TROUGH_OFFSET_DISTANCE = 0.0; // 0.10 offset to reef
 
     public static final List<Pose2d> blueScoringPoses;
     public static final List<Pose2d> blueTroughScoringPoses;
