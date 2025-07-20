@@ -60,21 +60,21 @@ public class Constants {
   public static class Lights {
     // right - 34 leds, left - 33, cross - 20
     // LED segment lengths
-    public static final int TOTAL_LENGTH = 86;
+    public static final int TOTAL_LENGTH = 60;
 
     // LED segment indices
     public static final int RIGHT_SEGMENT_START = 0;
-    public static final int RIGHT_SEGMENT_END = 32;
-    public static final int CROSS_SEGMENT_START = 33;
-    public static final int CROSS_SEGMENT_END = 52;
-    public static final int LEFT_SEGMENT_START = 53;
-    public static final int LEFT_SEGMENT_END = 85;
+    public static final int RIGHT_SEGMENT_END = 19;
+    public static final int CROSS_SEGMENT_START = 20;
+    public static final int CROSS_SEGMENT_END = 39;
+    public static final int LEFT_SEGMENT_START = 40;
+    public static final int LEFT_SEGMENT_END = 59;
 
     // Battery charge progress bar indices
-    public static final int BATTERY_PROGRESS_START = 34;
-    public static final int BATTERY_PROGRESS_END = 48;
-    public static final int BATTERY_PROGRESS_REVERSE_START = 49;
-    public static final int BATTERY_PROGRESS_REVERSE_END = 53;
+    public static final int BATTERY_PROGRESS_START = 20;
+    public static final int BATTERY_PROGRESS_END = 39;
+    public static final int BATTERY_PROGRESS_REVERSE_START = 40;
+    public static final int BATTERY_PROGRESS_REVERSE_END = 44;
   }
 
   public static class Vision {

@@ -335,7 +335,7 @@ public class Superstructure extends SubsystemBase {
   private final List<Transition> transitions = new ArrayList<>();
 
   private Superstructure() {
-    // transitions 初始化
+     // this just makes it so the elevator doesn't move until the operator wants to intake
     transitions.add(
         new Transition(
             State.StartPosition,
@@ -344,6 +344,8 @@ public class Superstructure extends SubsystemBase {
     transitions.add(
         new Transition(
             State.StartPosition, State.PreScore, () -> Robot.getInstance().isAutonomous()));
+
+    // Arm source intaking, must be here
     transitions.add(
         new Transition(State.Rest, State.ArmSourceIntake, () -> inputs.wantArmSourceIntake));
     transitions.add(
@@ -351,12 +353,16 @@ public class Superstructure extends SubsystemBase {
             State.ArmSourceIntake,
             State.Rest,
             () -> !inputs.wantArmSourceIntake || Arm.getInstance().getHasObject()));
+
+    // Intake source intaking
     transitions.add(new Transition(State.Rest, State.SourceIntake, () -> inputs.wantSourceIntake));
     transitions.add(
         new Transition(
             State.SourceIntake,
             State.Rest,
             () -> !inputs.wantSourceIntake || Intake.getInstance().hasCoral()));
+
+    // Trough reverse handoff, must be here
     transitions.add(
         new Transition(
             State.PreScore,
@@ -446,6 +452,8 @@ public class Superstructure extends SubsystemBase {
         ScoringLevel.L3, State.PrepareL3, State.StartL3, State.PlaceL3, State.AfterL3);
     addScoringTransitions(
         ScoringLevel.L2, State.PrepareL2, State.StartL2, State.PlaceL2, State.AfterL2);
+
+    // Algae Removal
     transitions.add(
         new Transition(
             State.AlgaeExit,
