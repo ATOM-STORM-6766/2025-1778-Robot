@@ -125,7 +125,7 @@ public class Intake extends SubsystemBase {
 
   // Kotlin: val hasCoral get() = !linebreak.get() || Controls.operatorController.hid.touchpadButton
   public boolean hasCoral() {
-    return !linebreakFoller.get() || Controls.operatorController.getHID().getTouchpadButton();
+    return !(linebreakFoller.get() || linebreak.get()) || Controls.operatorController.getHID().getTouchpadButton();
   }
 
   // Kotlin: val atSetpoint get() = Math.abs(angle - effectivePivotState.angleSetpoint) <
