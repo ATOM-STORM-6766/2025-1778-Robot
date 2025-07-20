@@ -109,7 +109,7 @@ public class Constants {
     public static final double FIELD_X_SIZE = 17.548249;
     public static final double FIELD_Y_SIZE = 8.051800;
 
-    public static final double BLUE_BARGE_SCORING_X = 7.6;
+    public static final double BLUE_BARGE_SCORING_X = 7.68;
     public static final double RED_BARGE_SCORING_X = FIELD_X_SIZE - BLUE_BARGE_SCORING_X;
 
     public static final double SAFE_WALL_DISTANCE = 1.0;
@@ -626,7 +626,7 @@ public class Constants {
         0.5 + Units.inchesToMeters(12.9375) * ALIGN_TRANSLATION_WEIGHT * (1 - 2 * 0.3);
 
     public static PIDController makeAlignTurnPID() {
-      PIDController pid = new PIDController(4.0, 0.0, 0.01);
+      PIDController pid = new PIDController(5.0, 0.0, 0.01);
       pid.enableContinuousInput(-Math.PI, Math.PI);
       return pid;
     }
@@ -642,7 +642,7 @@ public class Constants {
     }
 
     public static PIDController makeAlignDrivePID() {
-      return new PIDController(4.5, 0.0, 0.04);
+      return new PIDController(5.0, 0.0, 0.01);
     }
   }
 

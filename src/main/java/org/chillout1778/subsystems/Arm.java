@@ -75,8 +75,8 @@ public class Arm extends SubsystemBase {
     PostAlgae(Math.toRadians(110.0), MirrorType.ClosestToReef),
     DescoreAlgae(Math.toRadians(110.0), MirrorType.ClosestToReef),
     SafeInsideRobotAngle(Math.PI - Constants.Arm.SAFE_INSIDE_ROBOT_ANGLE, MirrorType.ClosestToReef),
-    PreBarge(Math.toRadians(160.0), MirrorType.AlgaeScore),
-    BargeScore(Math.toRadians(160.0), MirrorType.AlgaeScore),
+    PreBarge(Math.toRadians(170.0), MirrorType.AlgaeScore),
+    BargeScore(Math.toRadians(170.0), MirrorType.AlgaeScore),
     Processor(Math.toRadians(80.0), MirrorType.ProcessorScore),
     AlgaeGroundPickup(Math.toRadians(-78.0), MirrorType.ActuallyFixedAngle),
     ExitAlgaeGroundPickup(Math.toRadians(-95.0), MirrorType.ActuallyFixedAngle),
@@ -489,9 +489,8 @@ public class Arm extends SubsystemBase {
         () -> 360.0 * armPivotMotor.getClosedLoopReference().getValueAsDouble(),
         null);
     builder.addBooleanProperty("At setpoint?", this::isAtSetpoint, null);
-    builder.addDoubleProperty("roller current", () -> statorCurrentSignal.getValueAsDouble(), null);
+    builder.addDoubleProperty("Roller current", () -> statorCurrentSignal.getValueAsDouble(), null);
     builder.addBooleanProperty("Is Zeroed?", () -> isZeroed, null);
     Utils.addClosedLoopProperties("Arm pivot", armPivotMotor, builder);
-    builder.addStringProperty("Arm roller speed", () -> rollerState.name(), null);
   }
 }

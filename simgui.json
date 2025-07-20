@@ -1,10 +1,5 @@
 {
   "HALProvider": {
-    "Addressable LEDs": {
-      "window": {
-        "visible": false
-      }
-    },
     "Other Devices": {
       "window": {
         "visible": false
@@ -57,11 +52,16 @@
         "window": {
           "visible": true
         }
+      },
+      "/Shuffleboard/Robot/Auto Chooser": {
+        "window": {
+          "visible": true
+        }
       }
     }
   },
   "NetworkTables Info": {
-    "visible": false
+    "visible": true
   },
   "NetworkTables View": {
     "visible": false

@@ -199,18 +199,7 @@ public class Intake extends SubsystemBase {
         "Intake setpoint", () -> Math.toDegrees(getEffectivePivotState().angleSetpoint), null);
     builder.addBooleanProperty("at setpoint?", this::isAtSetpoint, null);
     builder.addBooleanProperty("Intake have coral", this::hasCoral, null);
-    builder.addStringProperty(
-        "Effective intake pivot state", () -> getEffectivePivotState().toString(), null);
-    builder.addStringProperty(
-        "Underlying intake pivot state", () -> realPivotState.toString(), null);
     builder.addBooleanProperty("Is Zeroed?", this::isZeroed, null);
-    Utils.addClosedLoopProperties("Intake Pivot", pivotMotor, builder);
-    Utils.addClosedLoopProperties("Intake Roller", rollerMotor, builder);
-    builder.addBooleanProperty("unsafe for intake to go up?", this::isUnsafeToGoUp, null);
-    builder.addStringProperty(
-        "Effective intake roller state", () -> getEffectiveRollerState().toString(), null);
-    builder.addStringProperty(
-        "Underlying intake roller state", () -> realRollerState.toString(), null);
     builder.addBooleanProperty("Intake linebreak", () -> linebreak.get(), null);
     builder.addBooleanProperty("Intake linebreakFollower", () -> linebreakFoller.get(), null);
   }
