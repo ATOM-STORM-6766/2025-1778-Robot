@@ -626,7 +626,7 @@ public class Constants {
         0.5 + Units.inchesToMeters(12.9375) * ALIGN_TRANSLATION_WEIGHT * (1 - 2 * 0.3);
 
     public static PIDController makeAlignTurnPID() {
-      PIDController pid = new PIDController(5.0, 0.0, 0.01);
+      PIDController pid = new PIDController(4.0, 0.0, 0.01);
       pid.enableContinuousInput(-Math.PI, Math.PI);
       return pid;
     }
@@ -642,7 +642,7 @@ public class Constants {
     }
 
     public static PIDController makeAlignDrivePID() {
-      return new PIDController(5.0, 0.0, 0.01);
+      return new PIDController(4.5, 0.0, 0.04);
     }
   }
 
