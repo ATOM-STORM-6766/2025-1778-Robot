@@ -94,7 +94,7 @@ public class Controls {
       return AlignMode.ReefAlign;
     else if (wantCoralAutoAlign()
         && superstructureInputs().getWantedScoringLevel() == Superstructure.ScoringLevel.TROUGH)
-      return AlignMode.TroughAlign;
+      return AlignMode.None;
     else if (wantAlgaeAutoAlign()
         && superstructureInputs().getWantGetAlgae()
         && !Arm.getInstance().getHasObject()) return AlignMode.AlgaeAlign;
