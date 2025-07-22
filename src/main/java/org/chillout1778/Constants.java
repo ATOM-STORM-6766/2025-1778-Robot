@@ -109,7 +109,7 @@ public class Constants {
     public static final double FIELD_X_SIZE = 17.548249;
     public static final double FIELD_Y_SIZE = 8.051800;
 
-    public static final double BLUE_BARGE_SCORING_X = 7.85;
+    public static final double BLUE_BARGE_SCORING_X = 7.70;
     public static final double RED_BARGE_SCORING_X = FIELD_X_SIZE - BLUE_BARGE_SCORING_X;
 
     public static final double SAFE_WALL_DISTANCE = 1.0;
