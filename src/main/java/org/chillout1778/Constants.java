@@ -315,7 +315,7 @@ public class Constants {
     public static final double PIVOT_ENCODER_RATIO =
         (36.0 / 16.0) * (36.0 / 16.0) * (60.0 / 24.0) * (12.0 / 54.0);
     public static final double PIVOT_GEAR_RATIO = (12.0 / 60.0) * (20.0 / 60.0) * (12.0 / 54.0);
-    public static final double PIVOT_ABS_ENCODER_OFFSET_ENCODER_ROTATIONS = 0.788;
+    public static final double PIVOT_ABS_ENCODER_OFFSET_ENCODER_ROTATIONS = 0.794;
     public static final double CORAL_CENTER_OFFSET = Units.inchesToMeters(9.5);
     public static final double SAFE_DISTANCE_FROM_REEF_CENTER = Units.inchesToMeters(70.0);
     public static final double SAFE_PLACEMENT_DISTANCE = Units.inchesToMeters(60.0);
